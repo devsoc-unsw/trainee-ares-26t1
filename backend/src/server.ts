@@ -2,9 +2,16 @@ import express, { json, Request, Response } from "express";
 import cors from "cors";
 import morgan from "morgan";
 import process from "process";
+import dotenv from "dotenv";
+
+import { connectDB } from "./db/connect";
+import authRoutes from "./routes/auth";
+
+dotenv.config();
+
 
 const app = express();
-const PORT = 5000;
+const PORT = Number(process.env.PORT) || 5000;
 const HOST = "127.0.0.1";
 
 app.use(json());
@@ -13,21 +20,28 @@ app.use(cors());
 // Displays requests and status codes on terminal
 app.use(morgan("dev"));
 
-// Stub endpoint
+// auth routes
+app.use("/auth", authRoutes);
+
+// Stub endpoint ///////////////////////////////////////
 app.get("/hi", (req: Request, res: Response) => {
   res.json({ message: "Hello World!" });
 });
 
-const server = app.listen(PORT, HOST, () => {
-  console.log(`Server started on ${PORT} at ${HOST}`);
-});
+const start = async () => {
+  await connectDB();
 
-process.on("SIGINT", () => {
-  server.close(() => {
-    console.log("Shutting down server gracefully.");
-    process.exit();
+  const server = app.listen(PORT, HOST, () => {
+    console.log(`Server started on ${PORT} at ${HOST}`);
   });
-});
 
+  process.on("SIGINT", () => {
+    server.close(() => {
+      console.log("Shutting down server gracefully.");
+      process.exit();
+    });
+  });
+};
 
+start();
 

@@ -20,15 +20,8 @@ function App() {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <h1 style={{ textAlign: "center" }}>Meowmentum :3</h1>
+    <div className="flex flex-col items-center justify-center">
+      <h1 className="text-xl text-red-500 text-center">Meowmentum :3</h1>
       <button onClick={testApi}>Click Me to check api!</button>
       <p>{helloString ? helloString : "Nothing is here"}</p>
     </div>

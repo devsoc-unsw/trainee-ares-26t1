@@ -1,7 +1,7 @@
 const GlobalLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div
-      className="min-h-screen bg-repeat bg-center flex items-center justify-center p-6"
+      className="min-h-screen bg-repeat bg-center flex p-6"
       style={{
         backgroundImage: "url('/starrybg.png')",
       }}

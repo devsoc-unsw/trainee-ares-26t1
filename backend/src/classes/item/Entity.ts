@@ -2,7 +2,7 @@ class Entity {
   private id: string;
   private width: number;
   private height: number;
-  private zIndex: number; // Between 0 - 3 which determines the layer the item will be on
+  private zIndex: number; // Between 0 - 2 which determines the layer the item will be on
 
   constructor(width: number, height: number, zIndex: number) {
     this.id = crypto.randomUUID();

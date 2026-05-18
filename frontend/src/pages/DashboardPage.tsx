@@ -10,7 +10,7 @@ const DashboardPage = () => {
     const bucks = async() => {
         try {
             const data = await fetchUser();
-            setMeowBucks(data.meowBucks);
+            setMeowBucks(data.money);
         } catch (err) {
             console.log(err);
         }
@@ -24,7 +24,7 @@ const DashboardPage = () => {
                     <div className="flex flex-col">
                         <div className="flex flex-row">
                             <p className="pl-1 pr-1 bg-theme-brown/60 rounded-md">Enter</p>
-                            <p> to save</p>
+                            <p>to save</p>
                         </div>
                         <div/>
                         <div className="flex flex-row mt-2">
@@ -35,29 +35,35 @@ const DashboardPage = () => {
 
                     <div className="flex flex-row">
                         <WoodContainer>
-                            <p className="w-[10vw] md:w-[5vw] h-0 text-xl flex justify-end items-center">$ {meowBucks}</p>
+                            <div className="flex flex-row w-[20vw] md:w-[6vw] h-[5vh] justify-between items-center">
+                                <p className="text-xl pr-2 md:pt-5 pt-3 pl-2">$</p>
+                                <p className="pr-2 md:pt-5 pt-3 text-xl">{meowBucks}</p>
+                            </div>
                         </WoodContainer>
                     </div>
                 </div>
             </div>
+
             {/* body of the dashboard */}
             <div className="flex flex-row mt-5 w-screen pt-20">
                 {/* to set the side menu to true */}
                 <div style={{visibility: menu ? "hidden" : "visible"}}>
-                    <button onClick={() => setMenu(!menu)}>
+                    <button className="flex h-[50vh] items-center ml-[-20vw] md:ml-[-9vw]" onClick={() => setMenu(!menu)}>
                         <WoodContainer>
-                            <div className=" flex items-center h-[5vh] w-[5vw]">
-                                <p className="rotate-90 text-2xl pl-10 pt-5">MENU</p>
+                            <div className="flex items-center p-10 md:p-15 h-[40vh] w-[2vw] md:h-[50vh]">
+                                <p className="rotate-90 text-2xl md:pl-10 pt-5 md:pt-0">MENU</p>
                             </div>
                             <div className="h-[5vh] w-[10vw]"/>
                         </WoodContainer>
                     </button>
                     
                 </div>
+
                 {/* to set the base menu component */}
                 <div style={{visibility: menu ? "visible" : "hidden"}}>
                     <BaseMenu/>
                 </div>
+
                 {/* for map */}
                 <div></div>
             </div>

@@ -8,10 +8,28 @@ type Auth = {
   message: string;
 };
 
+type Item = {
+  name: string,
+  amount: number
+}
+
+type Task = {
+  id: number,
+  type: string, // type of the task (i.e daily, weekly, custom)
+  name: string, // name of the task
+  amount: number, // point
+  difficulty ?: string, // Hard Easy, etc
+  dayOfWk ?: number, // for weekly deadline
+  deadline ?: Date // for non daily tasks
+}
+
 type User = {
   name: string,
   email: string,
-  meowBucks: number
+  money: number,
+  inventory: Item[],
+  tasks: Task[],
+  debtStartDate: Date
 }
 
 export const testApi = async (): Promise<HelloResponse> =>

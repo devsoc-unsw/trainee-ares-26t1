@@ -16,9 +16,9 @@ class User {
   // Coordinate of an item is represented by the top left of the occupying area.
   // Eg: A table that spans 2 x 2 can have a (1, 1). This means that is spans from
   //     (1, 1) to (2, 2).
-  private layer0: ItemType[][]; 
-  private layer1: CatType[][]; // Assumes that only cats will be on this layer
-  private layer2: ItemType[][];
+  private layer0: Entity[][]; 
+  private layer1: Entity[][]; // Assumes that only cats will be on this layer
+  private layer2: Entity[][];
   
   private inventory: Map<ItemType, number>;
   private tasks: Task[];
@@ -66,15 +66,15 @@ class User {
     return this.sprite;
   }
 
-  getLayer0(): ItemType[][] {
+  getLayer0(): Entity[][] {
     return this.layer0;
   }
 
-  getLayer1(): CatType[][] {
+  getLayer1(): Entity[][] {
     return this.layer1;
   }
 
-  getLayer2(): ItemType[][] {
+  getLayer2(): Entity[][] {
     return this.layer2;
   }
 
@@ -94,15 +94,15 @@ class User {
     this.money = newMoney;
   }
 
-  setLayer0(newLayer0: ItemType[][]): void {
+  setLayer0(newLayer0: Entity[][]): void {
     this.layer0 = newLayer0;
   }
 
-  setLayer1(newLayer1: CatType[][]): void {
+  setLayer1(newLayer1: Entity[][]): void {
     this.layer1 = newLayer1;
   }
 
-  setLayer2(newLayer2: ItemType[][]): void {
+  setLayer2(newLayer2: Entity[][]): void {
     this.layer2 = newLayer2;
   }
 
@@ -118,3 +118,5 @@ class User {
     this.debtStartDate = newDebtStartDate;
   }
 }
+
+export default User;

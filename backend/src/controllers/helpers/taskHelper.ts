@@ -1,7 +1,5 @@
+import CustomTaskFactory from "../../classes/task/CustomTaskFactory";
 import DailyTask from "../../classes/task/DailyTask";
-import EasyTask from "../../classes/task/EasyTask";
-import HardTask from "../../classes/task/HardTask";
-import MediumTask from "../../classes/task/MediumTask";
 import WeeklyTask from "../../classes/task/WeeklyTask";
 import { CustomVariant, TaskType } from "../../constants/taskConstants";
 
@@ -39,17 +37,17 @@ export const createTaskEntry = (req: any, name: string, type: TaskType) => {
       const { difficulty, deadline } = req.body;
       switch (difficulty) {
         case CustomVariant.Easy: {
-          task = new EasyTask(name, deadline);
+          task = CustomTaskFactory.createCustomTask(CustomVariant.Easy, name, deadline);
           break;
         }
 
         case CustomVariant.Medium: {
-          task = new MediumTask(name, deadline);
+          task = CustomTaskFactory.createCustomTask(CustomVariant.Medium, name, deadline);
           break;
         }
 
         case CustomVariant.Hard: {
-          task = new HardTask(name, deadline);
+          task = CustomTaskFactory.createCustomTask(CustomVariant.Hard, name, deadline);
           break;
         }
 

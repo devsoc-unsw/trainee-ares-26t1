@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import { User } from "../../models/User";
 import { Response, NextFunction } from "express";
 
+// Gets the token, verifies the token with user and returns that user data
 export const authMiddleware = async (req: any, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers.authorization;

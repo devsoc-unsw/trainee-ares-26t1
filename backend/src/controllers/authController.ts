@@ -14,9 +14,28 @@ export const register = async (req: Request, res: Response) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Insert new user into db
     const user = await User.create({
-      email,
+      email: email,
       password: hashedPassword,
+      money: 0,
+      sprite: "Black",
+    
+      layer0: Array.from({ length: 10 }, () =>
+        Array.from({ length: 10 }, () => null)
+      ),
+    
+      layer1: Array.from({ length: 10 }, () =>
+        Array.from({ length: 10 }, () => null)
+      ),
+    
+      layer2: Array.from({ length: 10 }, () =>
+        Array.from({ length: 10 }, () => null)
+      ),
+    
+      inventory: {},
+      tasks: [],
+      debtStartDate: null
     });
 
     res.status(201).json({ id: user._id, email: user.email });

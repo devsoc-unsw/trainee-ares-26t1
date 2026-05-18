@@ -15,3 +15,8 @@ export enum ItemType {
   PotPlant = POTPLANT_NAME,
 }
 
+export enum EntityType {
+  Item = "Item",
+  Cat = "Cat",
+}
+

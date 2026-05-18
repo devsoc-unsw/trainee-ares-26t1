@@ -1,6 +1,6 @@
 import { BaseMenu } from "../components/menu/base";
 import WoodContainer from "../components/WoodContainer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchUser } from "../api/api";
 
 const DashboardPage = () => {
@@ -16,8 +16,21 @@ const DashboardPage = () => {
         }
     }
 
+    useEffect(() => {
+        const handleEscape = (event: any) => {
+            if (event.key === "Escape") {
+                setMenu(false);
+            }
+
+            window.addEventListener('keydown', handleEscape);
+
+            return () => {
+                window.removeEventListener('keydown', handleEscape);
+            }
+        }
+    }, []);
+
     return (
-        // need to test this on pnpm dev
         <div className="flex flex-col min-h-screen">
             <div className="sticky top-0 flex flex-col w-[85vw] md:w-[95vw]">
                 <div className="flex flex-row justify-between">
@@ -61,7 +74,7 @@ const DashboardPage = () => {
 
                 {/* to set the base menu component */}
                 <div style={{visibility: menu ? "visible" : "hidden"}}>
-                    <BaseMenu/>
+                    <BaseMenu updateParent={setMenu}/>
                 </div>
 
                 {/* for map */}

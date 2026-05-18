@@ -4,7 +4,7 @@ type WoodContainerProps = {
 
 const WoodContainer = ({ children }: WoodContainerProps) => {
   return (
-    <div className="relative bg-theme-brown overflow-visible">
+    <div className="relative bg-theme-brown p-6 overflow-visible">
 
       {/* left */}
       <div className="absolute -left-2 top-[-12px] h-[calc(100%+24px)] w-3 bg-theme-brown-dark border border-theme-purple shadow-[2px_2px_0px_#161B2C]" />

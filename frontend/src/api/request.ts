@@ -1,4 +1,4 @@
-export const API_URL = 'http://localhost:5000';
+export const API_URL = 'http://localhost:5001';
 
 const authHeader = (): Record<string, string> => {
   const token = localStorage.getItem('token');

@@ -25,7 +25,7 @@ export const deleteTask = async (req: any, res: Response) => {
     const { taskId } = req.body;
     const user = req.user;
 
-    // Find the index where the to-be-deleted task i
+    // Find the index where the to-be-deleted task is
     const taskIndex = user.tasks.findIndex(
       (currTask: any) => currTask.id === taskId,
     );

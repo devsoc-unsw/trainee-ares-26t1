@@ -4,7 +4,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import GlobalLayout from "./pages/GlobalLayout";
-import DashboardPage from "./pages/DasboardPage";
+import DashboardPage from "./pages/DashboardPage";
 
 function App() {
   return(

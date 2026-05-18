@@ -1,8 +1,5 @@
 import CustomTaskFactory from "../../classes/task/CustomTaskFactory";
 import DailyTask from "../../classes/task/DailyTask";
-import EasyTask from "../../classes/task/EasyTask";
-import HardTask from "../../classes/task/HardTask";
-import MediumTask from "../../classes/task/MediumTask";
 import WeeklyTask from "../../classes/task/WeeklyTask";
 import { CustomVariant, TaskType } from "../../constants/taskConstants";
 

@@ -2,18 +2,6 @@ import mongoose, { Schema } from "mongoose";
 import { IEntity } from "./Entity";
 import TaskSchema, { ITask } from "./Task";
 
-// const userSchema = new mongoose.Schema(
-//   {
-//     email: { type: String, required: true, unique: true },
-//     password: { type: String, required: true },
-//     name: String,
-
-//     // can add other fields later...
-//     // avatar: String,
-//   },
-//   { timestamps: true }
-// );
-
 export interface IUser extends Document {
   email: string;
 
@@ -54,7 +42,6 @@ const UserSchema = new Schema<IUser>({
   password: {
     type: String,
     required: true,
-    minlength: 64
   },
 
   money: {

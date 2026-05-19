@@ -2,10 +2,7 @@ import { BaseMenu } from "../components/menu/BaseMenu";
 import WoodContainer from "../components/WoodContainer";
 import { useEffect, useState } from "react";
 import { fetchUser } from "../api/api";
-import { GameMap } from "../components/map/GameMap";
-import { DUMMY_LAYERS, TILE_TYPES } from "../components/map/MapTypes";
-import ZoomableContainer from "../components/map/ZoomableContainer";
-import { Player } from "../components/sprites/Player";
+import GameMap from "../components/map/GameMap";
 
 const DashboardPage = () => {
     const [menu, setMenu] = useState(false);
@@ -40,35 +37,11 @@ const DashboardPage = () => {
 
     return (
         <div className="relative flex flex-col min-h-screen min-w-screen">
-            {/*MAP */}
+            {/*MAP (leave here to put it under all ui elements) */}
             <div className="w-full h-full absolute inset-0 overflow-hidden">
-                <ZoomableContainer>
-                    <WoodContainer>
-                    <div className="p-3">
-                        <div className="relative">
-                        <GameMap
-                            layers={DUMMY_LAYERS}
-                            tiles={TILE_TYPES}
-                            tileSize={50}
-                            showGrid
-                            highlightCollision
-                        />
-                        <Player
-                            spritesheets={{
-                            front: "/sprites/cat-waiter-front.png",
-                            back:  "/sprites/cat-waiter-back.png",
-                            side:  "/sprites/cat-waiter-side.png",
-                            }}
-                            collisionLayer={DUMMY_LAYERS.layer1}
-                            tileSize={50}
-                            scale={3}
-                            slideMs={150}
-                        />
-                        </div>
-                    </div>
-                    </WoodContainer>
-                </ZoomableContainer>
+                <GameMap />
             </div>
+
             {/* TOP BAR */}
             <div className="sticky top-0 flex flex-col w-[85vw] md:w-[95vw]">
                 <div className="flex flex-row justify-between px-10 py-5">

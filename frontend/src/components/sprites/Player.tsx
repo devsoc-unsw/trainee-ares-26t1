@@ -15,10 +15,8 @@ export interface PlayerSpritesheets {
 export interface PlayerProps {
   spritesheets: PlayerSpritesheets;
   collisionLayer: TileId[][];
-
   initialCol?: number;
   initialRow?: number;
-
   tileSize?: number;
   scale?: number;
   slideMs?: number;
@@ -26,20 +24,13 @@ export interface PlayerProps {
   walkFrameDuration?: number;
 }
 
-// ─── Spritesheet layout constants ─────────────────────────────────────────────
+// ─── Spritesheet constants ────────────────────────────────────────────────────
 
 const FRAME_W = 16;
 const FRAME_H = 16;
 
-const ANIM_ROW: Record<AnimationName, number> = {
-  idle: 0,
-  walk: 1,
-};
-
-const FRAME_COUNT: Record<AnimationName, number> = {
-  idle: 3,
-  walk: 4,
-};
+const ANIM_ROW: Record<AnimationName, number> = { idle: 0, walk: 1 };
+const FRAME_COUNT: Record<AnimationName, number> = { idle: 3, walk: 4 };
 
 const DIRECTION_SHEET: Record<Direction, { sheet: keyof PlayerSpritesheets; flip: boolean }> = {
   down:  { sheet: "front", flip: false },
@@ -78,62 +69,100 @@ export function Player({
   const [anim,      setAnim]      = useState<AnimationName>("idle");
   const [frame,     setFrame]     = useState(0);
 
+  // Refs that the rAF loop reads — avoids stale closures
+  const colRef       = useRef(initialCol);
+  const rowRef       = useRef(initialRow);
   const movingRef    = useRef(false);
+  const animRef      = useRef<AnimationName>("idle");
+  const heldKeys     = useRef<Set<string>>(new Set());
+  const lastMoveRef  = useRef(0);
   const lastFrameRef = useRef(0);
   const rafRef       = useRef<number | null>(null);
-  const animRef      = useRef<AnimationName>("idle");
+
+  // Keep refs in sync with state
+  useEffect(() => { colRef.current = col; }, [col]);
+  useEffect(() => { rowRef.current = row; }, [row]);
 
   // ── Collision ────────────────────────────────────────────────────────────
-  function canMoveTo(nextRow: number, nextCol: number): boolean {
+  function canMoveTo(r: number, c: number): boolean {
     const rows = collisionLayer.length;
     const cols = collisionLayer[0]?.length ?? 0;
-    if (nextRow < 0 || nextRow >= rows || nextCol < 0 || nextCol >= cols) return false;
-    return collisionLayer[nextRow][nextCol] == null;
+    if (r < 0 || r >= rows || c < 0 || c >= cols) return false;
+    return collisionLayer[r][c] == null;
   }
 
-  // ── Input ────────────────────────────────────────────────────────────────
+  // ── Track held keys (no OS repeat involved) ──────────────────────────────
   useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      const delta = KEY_MAP[e.key];
-      if (!delta) return;
-      e.preventDefault();
+    const onDown = (e: KeyboardEvent) => {
+      if (KEY_MAP[e.key]) { e.preventDefault(); heldKeys.current.add(e.key); }
+    };
+    const onUp = (e: KeyboardEvent) => {
+      heldKeys.current.delete(e.key);
+    };
+    window.addEventListener("keydown", onDown);
+    window.addEventListener("keyup",   onUp);
+    return () => {
+      window.removeEventListener("keydown", onDown);
+      window.removeEventListener("keyup",   onUp);
+    };
+  }, []);
 
-      setDirection(delta.dir);
-
-      if (movingRef.current) return;
-
-      const nextRow = row + delta.dr;
-      const nextCol = col + delta.dc;
-
-      if (!canMoveTo(nextRow, nextCol)) return;
-
-      movingRef.current = true;
-      setRow(nextRow);
-      setCol(nextCol);
-      setFrame(0);
-      setAnim("walk");
-      animRef.current = "walk";
-
-      setTimeout(() => {
-        movingRef.current = false;
-        setAnim("idle");
-        animRef.current = "idle";
-        setFrame(0);
-      }, slideMs);
-    }
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [col, row, collisionLayer, slideMs]);
-
-  // ── Frame animation loop ─────────────────────────────────────────────────
+  // ── Main game loop ───────────────────────────────────────────────────────
   useEffect(() => {
     function tick(timestamp: number) {
       rafRef.current = requestAnimationFrame(tick);
 
-      const currentAnim    = animRef.current;
-      const frameDuration  = currentAnim === "walk" ? walkFrameDuration : idleFrameDuration;
-      const frameCount     = FRAME_COUNT[currentAnim];
+      // ── Movement: attempt once per slideMs ──
+      if (!movingRef.current && timestamp - lastMoveRef.current >= slideMs) {
+        // Pick the first held key that maps to a direction
+        const key = [...heldKeys.current].find(k => KEY_MAP[k]);
+        if (key) {
+          const { dc, dr, dir } = KEY_MAP[key];
+          setDirection(dir);
+
+          const nextRow = rowRef.current + dr;
+          const nextCol = colRef.current + dc;
+
+          if (canMoveTo(nextRow, nextCol)) {
+            lastMoveRef.current = timestamp;
+            movingRef.current   = true;
+
+            colRef.current = nextCol;
+            rowRef.current = nextRow;
+            setCol(nextCol);
+            setRow(nextRow);
+            setFrame(0);
+            setAnim("walk");
+            animRef.current = "walk";
+
+            setTimeout(() => {
+              movingRef.current = false;
+              // Only go idle if no key is still held
+              if (![...heldKeys.current].some(k => KEY_MAP[k])) {
+                setAnim("idle");
+                animRef.current = "idle";
+                setFrame(0);
+              }
+            }, slideMs);
+          } else {
+            // Facing a wall — turn but stay idle
+            setAnim("idle");
+            animRef.current = "idle";
+          }
+        } else if (!movingRef.current) {
+          // No key held — ensure idle
+          if (animRef.current !== "idle") {
+            setAnim("idle");
+            animRef.current = "idle";
+            setFrame(0);
+          }
+        }
+      }
+
+      // ── Frame advance ──
+      const currentAnim   = animRef.current;
+      const frameDuration = currentAnim === "walk" ? walkFrameDuration : idleFrameDuration;
+      const frameCount    = FRAME_COUNT[currentAnim];
 
       if (timestamp - lastFrameRef.current > frameDuration) {
         lastFrameRef.current = timestamp;
@@ -145,22 +174,18 @@ export function Player({
     return () => {
       if (rafRef.current != null) cancelAnimationFrame(rafRef.current);
     };
-  }, [idleFrameDuration, walkFrameDuration]);
+  }, [slideMs, idleFrameDuration, walkFrameDuration, collisionLayer]);
 
   // ── Spritesheet math ─────────────────────────────────────────────────────
-  const { sheet, flip }  = DIRECTION_SHEET[direction];
-  const src              = spritesheets[sheet];
-  const sheetRow         = ANIM_ROW[anim];
-  const frameCount       = FRAME_COUNT[anim];
+  const { sheet, flip } = DIRECTION_SHEET[direction];
+  const src             = spritesheets[sheet];
+  const sheetRow        = ANIM_ROW[anim];
+  const sheetCols       = Math.max(...Object.values(FRAME_COUNT)); // 4
+  const bgX             = -(frame * FRAME_W * scale);
+  const bgY             = -(sheetRow * FRAME_H * scale);
+  const bgSize          = `${sheetCols * FRAME_W * scale}px ${Object.keys(ANIM_ROW).length * FRAME_H * scale}px`;
+  const displaySize     = FRAME_W * scale;
 
-  // Total sheet width = widest row (walk = 4 frames)
-  const sheetCols        = Math.max(...Object.values(FRAME_COUNT)); // 4
-  const bgX              = -(frame * FRAME_W * scale);
-  const bgY              = -(sheetRow * FRAME_H * scale);
-  const bgSize           = `${sheetCols * FRAME_W * scale}px ${Object.keys(ANIM_ROW).length * FRAME_H * scale}px`;
-  const displaySize      = FRAME_W * scale;
-
-  // Centre sprite on tile
   const offset = (tileSize - displaySize) / 2;
   const pixelX = col * tileSize + offset;
   const pixelY = row * tileSize + offset;
@@ -169,18 +194,16 @@ export function Player({
     <div
       className="absolute"
       style={{
-        left:      pixelX,
-        top:       pixelY,
-        width:     displaySize,
-        height:    displaySize,
+        left:       pixelX,
+        top:        pixelY,
+        width:      displaySize,
+        height:     displaySize,
         transition: `left ${slideMs}ms linear, top ${slideMs}ms linear`,
-        zIndex:    10,
-        // Flip horizontally for "left" direction
-        transform: flip ? "scaleX(-1)" : "scaleX(1)",
+        zIndex:     10,
+        transform:  flip ? "scaleX(-1)" : "scaleX(1)",
       }}
       aria-label="Player character"
     >
-      {/* Inner div holds the background so the flip transform doesn't invert bgX */}
       <div
         style={{
           width:              displaySize,

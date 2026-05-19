@@ -5,6 +5,8 @@ import { fetchUser } from "../api/api";
 import { GameMap } from "../components/map/GameMap";
 import { DUMMY_LAYERS, TILE_TYPES } from "../components/map/MapTypes";
 import ZoomableContainer from "../components/map/ZoomableContainer";
+import TestSprite from "../components/sprites/TestSprite";
+import { Player } from "../components/sprites/Player";
 
 const DashboardPage = () => {
     const [menu, setMenu] = useState(false);
@@ -44,6 +46,7 @@ const DashboardPage = () => {
                 <ZoomableContainer>
                     <WoodContainer>
                     <div className="p-3">
+                        <div className="relative">
                         <GameMap
                             layers={DUMMY_LAYERS}
                             tiles={TILE_TYPES}
@@ -51,6 +54,18 @@ const DashboardPage = () => {
                             showGrid
                             highlightCollision
                         />
+                        <Player
+                            spritesheets={{
+                            front: "/sprites/cat-waiter-front.png",
+                            back:  "/sprites/cat-waiter-back.png",
+                            side:  "/sprites/cat-waiter-side.png",
+                            }}
+                            collisionLayer={DUMMY_LAYERS.layer1}
+                            tileSize={50}
+                            scale={3}
+                            slideMs={150}
+                        />
+                        </div>
                     </div>
                     </WoodContainer>
                 </ZoomableContainer>

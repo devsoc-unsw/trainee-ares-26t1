@@ -11,9 +11,11 @@ export interface IUser extends Document {
 
   sprite: string;
 
-  layer0: (IEntity | null)[][];
-  layer1: (IEntity | null)[][];
-  layer2: (IEntity | null)[][];
+  layers: {
+    layer0: (IEntity | null)[][];
+    layer1: (IEntity | null)[][];
+    layer2: (IEntity | null)[][];
+  }
 
   inventory: Map<string, number>;
 
@@ -58,41 +60,42 @@ const UserSchema = new Schema<IUser>({
   /* =========================
      GAME BOARD LAYERS
   ========================= */
-
-  layer0: {
-    type: [[Schema.Types.Mixed]],
-    required: true,
-
-    validate: {
-      validator: function (board: IEntity[][]) {
-        return board.length === 10;
-      },
-      message: 'layer0 must contain 10 rows'
-    }
-  },
-
-  layer1: {
-    type: [[Schema.Types.Mixed]],
-    required: true,
-
-    validate: {
-      validator: function (board: IEntity[][]) {
-        return board.length === 10;
-      },
-      message: 'layer1 must contain 10 rows'
-    }
-  },
-
-  layer2: {
-    type: [[Schema.Types.Mixed]],
-    required: true,
-
-    validate: {
-      validator: function (board: IEntity[][]) {
-        return board.length === 10;
-      },
-      message: 'layer2 must contain 10 rows'
-    }
+  layers: {
+    layer0: {
+      type: [[Schema.Types.Mixed]],
+      required: true,
+  
+      validate: {
+        validator: function (board: IEntity[][]) {
+          return board.length === 10;
+        },
+        message: 'layer0 must contain 10 rows'
+      }
+    },
+  
+    layer1: {
+      type: [[Schema.Types.Mixed]],
+      required: true,
+  
+      validate: {
+        validator: function (board: IEntity[][]) {
+          return board.length === 10;
+        },
+        message: 'layer1 must contain 10 rows'
+      }
+    },
+  
+    layer2: {
+      type: [[Schema.Types.Mixed]],
+      required: true,
+  
+      validate: {
+        validator: function (board: IEntity[][]) {
+          return board.length === 10;
+        },
+        message: 'layer2 must contain 10 rows'
+      }
+    },
   },
 
   /* =========================

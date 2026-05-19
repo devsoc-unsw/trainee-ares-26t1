@@ -23,18 +23,20 @@ async function runTest() {
       password: "a".repeat(64), // matches your min length requirement
       money: 500,
       sprite: "Black",
-
-      layer0: Array.from({ length: 10 }, () =>
-        Array.from({ length: 10 }, () => null)
-      ),
-
-      layer1: Array.from({ length: 10 }, () =>
-        Array.from({ length: 10 }, () => null)
-      ),
-
-      layer2: Array.from({ length: 10 }, () =>
-        Array.from({ length: 10 }, () => null)
-      ),
+      
+      layers: {
+        layer0: Array.from({ length: 10 }, () =>
+          Array.from({ length: 10 }, () => null)
+        ),
+  
+        layer1: Array.from({ length: 10 }, () =>
+          Array.from({ length: 10 }, () => null)
+        ),
+  
+        layer2: Array.from({ length: 10 }, () =>
+          Array.from({ length: 10 }, () => null)
+        ),
+      },
 
       inventory: {
         "3a923ae7-2471-45cb-b81c-96abe9a1c8e5": 2,

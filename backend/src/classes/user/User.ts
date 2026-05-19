@@ -1,4 +1,4 @@
-import { CatType, MAX_BOARD_SIZE } from "../../constants/userContants";
+import { CatType, MAX_MAP_SIZE } from "../../constants/userContants";
 import Entity from "../item/Entity";
 import Task from "../task/Task";
 
@@ -33,14 +33,14 @@ class User {
     this.password = password;
     this.money = 0;
     this.sprite = sprite;
-    this.layer0 = Array.from({ length: MAX_BOARD_SIZE }, () => {
-      return Array(MAX_BOARD_SIZE).fill(null);
+    this.layer0 = Array.from({ length: MAX_MAP_SIZE }, () => {
+      return Array(MAX_MAP_SIZE).fill(null);
     });
-    this.layer1 = Array.from({ length: MAX_BOARD_SIZE }, () => {
-      return Array(MAX_BOARD_SIZE).fill(null);
+    this.layer1 = Array.from({ length: MAX_MAP_SIZE }, () => {
+      return Array(MAX_MAP_SIZE).fill(null);
     });
-    this.layer2 = Array.from({ length: MAX_BOARD_SIZE }, () => {
-      return Array(MAX_BOARD_SIZE).fill(null);
+    this.layer2 = Array.from({ length: MAX_MAP_SIZE }, () => {
+      return Array(MAX_MAP_SIZE).fill(null);
     });
     this.inventory = new Map<string, number>();
     this.tasks = [];

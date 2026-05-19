@@ -1,9 +1,9 @@
 interface ViewTaskMenuProps {
-    onBack: () => void;
+  onBack: () => void;
 }
 
 export const ViewTaskMenu = ({ onBack }: ViewTaskMenuProps) => {
-    return <h1>View Tasks</h1>;
+  return <h1>View Tasks</h1>;
 };
 
 export default ViewTaskMenu;

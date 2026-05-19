@@ -1,20 +1,16 @@
 import type { LucideIcon } from "lucide-react";
 
 interface MenuButtonProps {
-    text: string;
-    Icon: LucideIcon;
-    onClick?: () => void;
+  text: string;
+  Icon: LucideIcon;
+  onClick?: () => void;
 }
 
-export default function MenuButton({
-    text,
-    Icon,
-    onClick
-}: MenuButtonProps) {
-    return (
-        <div className="flex flex-col items-center justify-center">
-            <button
-                className="
+export default function MenuButton({ text, Icon, onClick }: MenuButtonProps) {
+  return (
+    <div className="flex flex-col items-center justify-center">
+      <button
+        className="
                     w-15 h-15
                     rounded-2xl
                     bg-theme-brown-light
@@ -31,14 +27,12 @@ export default function MenuButton({
                     active:translate-y-[4px]
                     active:shadow-none
                 "
-                onClick={onClick}
-            >
-                <Icon className="h-10 w-10 text-theme-black" />
-            </button>
+        onClick={onClick}
+      >
+        <Icon className="h-10 w-10 text-theme-black" />
+      </button>
 
-            <p className="text-md text-center mt-1 text-theme-white">
-                {text}
-            </p>
-        </div>
-    );
+      <p className="text-md text-center mt-1 text-theme-white">{text}</p>
+    </div>
+  );
 }

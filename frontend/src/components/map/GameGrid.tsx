@@ -19,7 +19,7 @@ export function GameGrid({
 }: GameGridProps) {
   const rows = layers.layer0.length;
   const cols = layers.layer0[0].length;
- 
+
   return (
     <div className="inline-flex flex-col">
       {Array.from({ length: rows }, (_, row) => (

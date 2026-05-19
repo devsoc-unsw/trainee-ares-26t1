@@ -6,12 +6,9 @@ const GlobalLayout = ({ children }: { children: React.ReactNode }) => {
         backgroundImage: "url('/starrybg.png')",
       }}
     >
-      <div className="w-full max-w-4xl">
-        {children}
-      </div>
+      <div className="w-full max-w-4xl">{children}</div>
     </div>
   );
-
-}
+};
 
 export default GlobalLayout;

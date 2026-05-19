@@ -5,17 +5,28 @@ import RegisterPage from "./pages/RegisterPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import GlobalLayout from "./pages/GlobalLayout";
 import DashboardPage from "./pages/DashboardPage";
+import { UserProvider } from "./context/UserContext";
+import { GameStateProvider } from "./context/GameStateContext";
 
 function App() {
-  return(
+  return (
     <GlobalLayout>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
+      <UserProvider>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route
+            path="/dashboard"
+            element={
+              <GameStateProvider>
+                <DashboardPage />
+              </GameStateProvider>
+            }
+          />
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </UserProvider>
     </GlobalLayout>
   );
 }

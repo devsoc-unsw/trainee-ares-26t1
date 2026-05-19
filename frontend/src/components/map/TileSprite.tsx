@@ -21,6 +21,6 @@ const TileSprite = ({ tile, tileSize }: TileSpriteProps) => {
       }}
     />
   );
-}
+};
 
 export default TileSprite;

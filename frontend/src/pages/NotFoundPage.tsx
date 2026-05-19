@@ -4,6 +4,6 @@ const NotFoundPage = () => {
       <h1>help,,,, im lost</h1>
     </div>
   );
-}
+};
 
 export default NotFoundPage;

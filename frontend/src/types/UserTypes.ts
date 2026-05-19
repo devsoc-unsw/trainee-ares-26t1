@@ -1,4 +1,4 @@
-import type { MapLayers } from "./MapTypes";
+import type { InventoryItem, MapLayers } from "./MapTypes";
 
 export interface Task {
   id: string;
@@ -15,11 +15,11 @@ export interface User {
   id: string;
   email: string;
   money: number;
-  sprite: string;
+  sprite: "black" | "orange" | "waiter";
 
   layers: MapLayers;
 
-  inventory: Record<number, number>;
+  inventory: InventoryItem[];
 
   tasks: Task[];
 

@@ -1,4 +1,4 @@
-import { Schema } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 export interface IEntity {
   id: string;
@@ -76,4 +76,4 @@ const EntitySchema = new Schema<IEntity>({
   _id: false
 });
 
-export default EntitySchema;
+export const Entity = mongoose.model("entity", EntitySchema);

@@ -37,10 +37,10 @@ async function runTest() {
       ),
 
       inventory: {
-        "Brown Chair": 2,
-        "Green Chair": 1,
-        "Table": 3,
-        "Pot Plant": 1
+        "3a923ae7-2471-45cb-b81c-96abe9a1c8e5": 2,
+        "00b74e70-538f-4326-95a5-f737d858105a": 1,
+        "059dcf56-7782-4e1b-9a2b-a57b5d310474": 3,
+        "5c0e7233-a45c-494f-8c35-f0493ce21296": 1,
       },
 
       tasks: [

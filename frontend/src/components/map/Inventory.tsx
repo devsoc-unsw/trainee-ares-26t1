@@ -1,4 +1,4 @@
-import { TILE_TYPES, type InventoryItem } from "./MapTypes";
+import { TILE_TYPES, type InventoryItem } from "../../types/MapTypes";
 
 interface SidebarProps {
   inventory: InventoryItem[];

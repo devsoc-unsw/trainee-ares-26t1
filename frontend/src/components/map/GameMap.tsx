@@ -3,7 +3,7 @@ import { Player } from "../sprites/Player"
 import WoodContainer from "../WoodContainer"
 import { DecorateMap } from "./DecorateMap"
 import { GameGrid } from "./GameGrid"
-import { DUMMY_LAYERS, TILE_TYPES, type InventoryItem, type MapLayers } from "./MapTypes"
+import { DUMMY_LAYERS, TILE_TYPES, type InventoryItem, type MapLayers } from "../../types/MapTypes"
 import ZoomableContainer from "./ZoomableContainer"
 import FloorGrid from "./FloorGrid"
 

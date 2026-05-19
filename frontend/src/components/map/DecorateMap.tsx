@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { TILE_TYPES, type InventoryItem, type MapLayers, type TileId } from "./MapTypes";
+import { TILE_TYPES, type InventoryItem, type MapLayers, type TileId } from "../../types/MapTypes";
 import InventorySidebar from "./Inventory";
 
 // ─── Types ──────────────────────────────────────────────────────────────────

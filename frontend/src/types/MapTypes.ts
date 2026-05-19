@@ -31,7 +31,7 @@ export const TILE_TYPES: Record<number, MapTile> = {
 
   2: {
       id: 2,
-      name: "Rug Left",
+      name: "Rug (Left)",
       layer: 0,
       sprite: "/tiles/lv0/rug_left.png",
       price: 20,
@@ -39,7 +39,7 @@ export const TILE_TYPES: Record<number, MapTile> = {
 
   3: {
       id: 3,
-      name: "Rug Right",
+      name: "Rug (Right)",
       layer: 0,
       sprite: "/tiles/lv0/rug_right.png",
       price: 20,

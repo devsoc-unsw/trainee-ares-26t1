@@ -1,4 +1,4 @@
-import type { MapLayers, MapTile } from "./MapTypes";
+import type { MapLayers, MapTile } from "../../types/MapTypes";
 import TileSprite from "./TileSprite";
 
 interface MapCellProps {

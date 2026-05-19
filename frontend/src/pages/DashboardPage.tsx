@@ -3,6 +3,7 @@ import WoodContainer from "../components/WoodContainer";
 import { useEffect, useState } from "react";
 import { fetchUser } from "../api/api";
 import GameMap from "../components/map/GameMap";
+import KeyHint from "../components/KeyHint";
 
 const DashboardPage = () => {
     const [menu, setMenu] = useState(false);
@@ -22,16 +23,18 @@ const DashboardPage = () => {
     }, []);
 
     useEffect(() => {
-        const handleEscape = (event: KeyboardEvent) => {
-            if (event.key === "Escape") {
-                setMenu(false);
+        const handleKeyDown = (event: KeyboardEvent) => {
+
+            if (event.code === "Tab") {
+                event.preventDefault(); // stops page scroll
+                setMenu(prev => !prev);
             }
         };
 
-        window.addEventListener("keydown", handleEscape);
+        window.addEventListener("keydown", handleKeyDown);
 
         return () => {
-            window.removeEventListener("keydown", handleEscape);
+            window.removeEventListener("keydown", handleKeyDown);
         };
     }, []);
 
@@ -43,36 +46,21 @@ const DashboardPage = () => {
             </div>
 
             {/* TOP BAR */}
-            <div className="sticky top-0 flex flex-col w-[85vw] md:w-[95vw]">
-                <div className="flex flex-row justify-between px-10 py-5">
-
+            <div className="sticky top-0 w-full md:px-20 px-10 py-5">
+                <div className="flex flex-row justify-between items-center">
                     {/* HELP TEXT */}
-                    <div className="flex flex-col">
-                        <div className="flex flex-row">
-                            <p className="pl-1 pr-1 bg-theme-brown/60 rounded-md">
-                                Enter
-                            </p>
-                            <p>to save</p>
-                        </div>
-
-                        <div className="flex flex-row mt-2">
-                            <p className="pl-1 pr-1 bg-theme-brown/60 rounded-md">
-                                Esc
-                            </p>
-                            <p>to cancel</p>
-                        </div>
+                    <div className="flex flex-col gap-2">
+                    <KeyHint keyName="Tab" action="to toggle menu" />
+                    <KeyHint keyName="w, a, s, d" action="to move" />
                     </div>
 
                     {/* MONEY */}
                     <WoodContainer>
-                        <div className="flex flex-row w-[20vw] md:w-[6vw] h-[5vh] justify-between items-center">
-                            <p className="text-xl pr-2 md:pt-5 pt-3 pl-2">$</p>
-                            <p className="pr-2 md:pt-5 pt-3 text-xl">
-                                {meowBucks}
-                            </p>
-                        </div>
+                    <div className="flex flex-row w-24 h-10 items-center justify-between px-3">
+                        <p className="text-xl">$</p>
+                        <p className="text-xl tabular-nums">{meowBucks}</p>
+                    </div>
                     </WoodContainer>
-
                 </div>
             </div>
 

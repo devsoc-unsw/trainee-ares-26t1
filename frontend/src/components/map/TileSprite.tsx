@@ -1,4 +1,4 @@
-import type { MapTile } from "./MapTypes";
+import type { MapTile } from "../../types/MapTypes";
 
 interface TileSpriteProps {
   tile: MapTile;

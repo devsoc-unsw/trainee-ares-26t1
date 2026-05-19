@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { TileId } from "../map/MapTypes";
+import type { TileId } from "../../types/MapTypes";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

@@ -1,5 +1,5 @@
 import { MapCell } from "./MapCell";
-import type { MapLayers, MapTile } from "./MapTypes";
+import type { MapLayers, MapTile } from "../../types/MapTypes";
 
 interface GameGridProps {
   layers: MapLayers;

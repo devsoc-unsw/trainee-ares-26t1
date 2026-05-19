@@ -33,7 +33,7 @@ export const resetUser = async (req: any, res: Response) => {
 
 export const updateCatType = async (req: any, res: Response) => {
   try {
-    const { newCat } = req.body as { newCat: CatType };
+    const { sprite: newCat } = req.body as { sprite: CatType };
     const user = req.user;
 
     user["sprite"] = newCat;
@@ -46,7 +46,7 @@ export const updateCatType = async (req: any, res: Response) => {
 
 export const updateMap = async (req: any, res: Response) => {
   try {
-    const { newLayers } = req.body;
+    const { layers: newLayers } = req.body;
     const user = req.user;
 
     // Check newLayers provided are valid

@@ -3,7 +3,7 @@ import { Entity } from "../models/Entity";
 
 export const buyItem = async (req: any, res: Response) => {
   try {
-    const { itemId } = req.body as { itemId: string };
+    const { id: itemId } = req.body as { id: string };
     const user = req.user;
 
     // Find item in db

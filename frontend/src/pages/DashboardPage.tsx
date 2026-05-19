@@ -5,7 +5,6 @@ import { fetchUser } from "../api/api";
 import { GameMap } from "../components/map/GameMap";
 import { DUMMY_LAYERS, TILE_TYPES } from "../components/map/MapTypes";
 import ZoomableContainer from "../components/map/ZoomableContainer";
-import TestSprite from "../components/sprites/TestSprite";
 import { Player } from "../components/sprites/Player";
 
 const DashboardPage = () => {

@@ -2,6 +2,9 @@ import { BaseMenu } from "../components/menu/BaseMenu";
 import WoodContainer from "../components/WoodContainer";
 import { useEffect, useState } from "react";
 import { fetchUser } from "../api/api";
+import { GameMap } from "../components/map/GameMap";
+import { DUMMY_LAYERS, TILE_TYPES } from "../components/map/MapTypes";
+import ZoomableContainer from "../components/map/ZoomableContainer";
 
 const DashboardPage = () => {
     const [menu, setMenu] = useState(false);
@@ -35,11 +38,26 @@ const DashboardPage = () => {
     }, []);
 
     return (
-        <div className="flex flex-col min-h-screen">
-
+        <div className="relative flex flex-col min-h-screen min-w-screen">
+            {/*MAP */}
+            <div className="w-full h-full absolute inset-0 overflow-hidden">
+                <ZoomableContainer>
+                    <WoodContainer>
+                    <div className="p-3">
+                        <GameMap
+                            layers={DUMMY_LAYERS}
+                            tiles={TILE_TYPES}
+                            tileSize={50}
+                            showGrid
+                            highlightCollision
+                        />
+                    </div>
+                    </WoodContainer>
+                </ZoomableContainer>
+            </div>
             {/* TOP BAR */}
             <div className="sticky top-0 flex flex-col w-[85vw] md:w-[95vw]">
-                <div className="flex flex-row justify-between">
+                <div className="flex flex-row justify-between px-10 py-5">
 
                     {/* HELP TEXT */}
                     <div className="flex flex-col">
@@ -73,29 +91,24 @@ const DashboardPage = () => {
 
             {/* BODY */}
             <div className="flex flex-row mt-5 w-screen pt-20">
-
                 {/* MENU BUTTON */}
                 {!menu && (
                     <button
-                        className="flex h-[50vh] items-center ml-[-20vw] md:ml-[-9vw]"
+                        className="absolute -left-3 top-1/2 -translate-y-1/2 z-20"
                         onClick={() => setMenu(true)}
                     >
                         <WoodContainer>
-                            <div className="flex items-center p-10 md:p-15 h-[40vh] w-[2vw] md:h-[50vh]">
-                                <p className="rotate-90 text-2xl md:pl-10 pt-5 md:pt-0">
+                            <div className="flex items-center justify-center h-[50vh] w-[4vw] min-w-[50px]">
+                                <p className="rotate-90 text-2xl whitespace-nowrap">
                                     MENU
                                 </p>
                             </div>
-                            <div className="h-[5vh] w-[10vw]" />
                         </WoodContainer>
                     </button>
                 )}
 
                 {/* BASE MENU */}
                 {menu && <BaseMenu/>}
-
-                {/*MAP */}
-                <div></div>
 
             </div>
         </div>

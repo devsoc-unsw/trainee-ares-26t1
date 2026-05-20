@@ -22,7 +22,7 @@ export const createTask = async (req: any, res: Response) => {
 
 export const deleteTask = async (req: any, res: Response) => {
   try {
-    const { taskId } = req.body;
+    const { id: taskId } = req.body;
     const user = req.user;
 
     // Find the index where the to-be-deleted task is

@@ -1,5 +1,5 @@
-import { ItemType } from "../../constants/itemConstants";
-import { CatType, MAX_BOARD_SIZE } from "../../constants/userContants";
+import { CatType, MAX_MAP_SIZE } from "../../constants/userContants";
+import Entity from "../item/Entity";
 import Task from "../task/Task";
 
 class User {
@@ -20,28 +20,29 @@ class User {
   private layer1: Entity[][]; // Assumes that only cats will be on this layer
   private layer2: Entity[][];
   
-  private inventory: Map<ItemType, number>;
+  // Maps itemId to number
+  private inventory: Map<string, number>;
   private tasks: Task[];
 
   // For when user goes into debt
   private debtStartDate: Date | null;
 
-  constructor(email: string, password: string, money: number, sprite: CatType) {
+  constructor(email: string, password: string, sprite: CatType) {
     this.id = crypto.randomUUID();
     this.email = email;
     this.password = password;
     this.money = 0;
     this.sprite = sprite;
-    this.layer0 = Array.from({ length: MAX_BOARD_SIZE }, () => {
-      return Array(MAX_BOARD_SIZE).fill(null);
+    this.layer0 = Array.from({ length: MAX_MAP_SIZE }, () => {
+      return Array(MAX_MAP_SIZE).fill(null);
     });
-    this.layer1 = Array.from({ length: MAX_BOARD_SIZE }, () => {
-      return Array(MAX_BOARD_SIZE).fill(null);
+    this.layer1 = Array.from({ length: MAX_MAP_SIZE }, () => {
+      return Array(MAX_MAP_SIZE).fill(null);
     });
-    this.layer2 = Array.from({ length: MAX_BOARD_SIZE }, () => {
-      return Array(MAX_BOARD_SIZE).fill(null);
+    this.layer2 = Array.from({ length: MAX_MAP_SIZE }, () => {
+      return Array(MAX_MAP_SIZE).fill(null);
     });
-    this.inventory = new Map<ItemType, number>();
+    this.inventory = new Map<string, number>();
     this.tasks = [];
     this.debtStartDate = null;
   }
@@ -78,7 +79,7 @@ class User {
     return this.layer2;
   }
 
-  getInventory(): Map<ItemType, number> {
+  getInventory(): Map<string, number> {
     return this.inventory;
   }
 
@@ -106,7 +107,7 @@ class User {
     this.layer2 = newLayer2;
   }
 
-  setInventory(newInventory: Map<ItemType, number>): void {
+  setInventory(newInventory: Map<string, number>): void {
     this.inventory = newInventory;
   }
 

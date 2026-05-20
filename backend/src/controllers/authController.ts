@@ -2,6 +2,10 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { User } from "../models/User";
+import process from "process";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -16,10 +20,11 @@ export const register = async (req: Request, res: Response) => {
 
     // Insert new user into db
     const user = await User.create({
+      id: crypto.randomUUID(),
       email: email,
       password: hashedPassword,
-      money: 0,
-      sprite: "Black",
+      money: 100,
+      sprite: "orange",
     
       layer0: Array.from({ length: 10 }, () =>
         Array.from({ length: 10 }, () => null)
@@ -33,13 +38,14 @@ export const register = async (req: Request, res: Response) => {
         Array.from({ length: 10 }, () => null)
       ),
     
-      inventory: {},
+      inventory: [],
       tasks: [],
       debtStartDate: null
     });
 
     res.status(201).json({ id: user._id, email: user.email });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -66,6 +72,7 @@ export const login = async (req: Request, res: Response) => {
 
     res.json({ token });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ message: "Server error" });
   }
 };

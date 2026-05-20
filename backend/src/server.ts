@@ -8,6 +8,7 @@ import { connectDB } from "./db/connect";
 import authRoutes from "./routes/auth";
 import taskRoutes from "./routes/task";
 import userRoutes from "./routes/user";
+import itemRoutes from "./routes/item";
 
 dotenv.config();
 
@@ -31,6 +32,9 @@ app.use("/task", taskRoutes);
 
 // user routes
 app.use("/user", userRoutes);
+
+// item routes
+app.use("/item", itemRoutes);
 
 // Stub endpoint ///////////////////////////////////////
 app.get("/hi", (req: Request, res: Response) => {

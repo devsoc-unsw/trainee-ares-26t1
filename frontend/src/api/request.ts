@@ -1,10 +1,10 @@
-export const API_URL = 'http://localhost:5001';
+export const API_URL = "http://localhost:5000";
 
 const authHeader = (): Record<string, string> => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
 
   return {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 };
@@ -12,7 +12,7 @@ const authHeader = (): Record<string, string> => {
 // general request handler
 const request = async <T>(
   path: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
 ): Promise<T> => {
   const response = await fetch(API_URL + path, {
     headers: {
@@ -26,7 +26,7 @@ const request = async <T>(
     const errorText = await response.text();
 
     throw new Error(
-      `HTTP ${response.status}: ${errorText || response.statusText}`
+      `HTTP ${response.status}: ${errorText || response.statusText}`,
     );
   }
 
@@ -42,10 +42,10 @@ const request = async <T>(
 // Wrapper for GET request
 export const get = <T>(
   path: string,
-  headers: Record<string, string> = {}
+  headers: Record<string, string> = {},
 ): Promise<T> => {
   return request<T>(path, {
-    method: 'GET',
+    method: "GET",
     headers,
   });
 };
@@ -54,10 +54,10 @@ export const get = <T>(
 export const post = <T>(
   path: string,
   body?: unknown,
-  headers: Record<string, string> = {}
+  headers: Record<string, string> = {},
 ): Promise<T> => {
   return request<T>(path, {
-    method: 'POST',
+    method: "POST",
     headers,
     body: body ? JSON.stringify(body) : undefined,
   });
@@ -67,10 +67,10 @@ export const post = <T>(
 export const put = <T>(
   path: string,
   body?: unknown,
-  headers: Record<string, string> = {}
+  headers: Record<string, string> = {},
 ): Promise<T> => {
   return request<T>(path, {
-    method: 'PUT',
+    method: "PUT",
     headers,
     body: body ? JSON.stringify(body) : undefined,
   });
@@ -79,10 +79,10 @@ export const put = <T>(
 // Wrapper for DELETE request
 export const del = <T>(
   path: string,
-  headers: Record<string, string> = {}
+  headers: Record<string, string> = {},
 ): Promise<T> => {
   return request<T>(path, {
-    method: 'DELETE',
+    method: "DELETE",
     headers,
   });
 };

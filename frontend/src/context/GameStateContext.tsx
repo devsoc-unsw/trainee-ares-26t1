@@ -27,6 +27,12 @@ interface GameState {
   setCurrentTime: (d: Date) => void;
   advanceDays: (days: number) => void;
   getCurrentTime: () => Date;
+
+  // warning popups
+  showEviction: boolean;
+  setShowEviction: (val: boolean) => void;
+  showNuke: boolean;
+  setShowNuke: (val: boolean) => void;
 }
 
 const GameStateContext = createContext<GameState | null>(null);
@@ -48,6 +54,10 @@ export const GameStateProvider = ({
   const [currentTime, setCurrentTime] = useState(
     new Date("2026-05-20T08:00:00"),
   );
+
+  // popups
+  const [showEviction, setShowEviction] = useState(false);
+  const [showNuke, setShowNuke] = useState(false);
 
   const advanceDays = (days: number) => {
     setCurrentTime((prev) => {
@@ -86,6 +96,10 @@ export const GameStateProvider = ({
         advanceDays,
 
         getCurrentTime,
+        showEviction,
+        setShowEviction,
+        showNuke,
+        setShowNuke,
       }}
     >
       {children}

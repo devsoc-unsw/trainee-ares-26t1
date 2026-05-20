@@ -35,7 +35,7 @@ type MenuView =
 
 export function BaseMenu() {
   const [menuContent, setMenuContent] = useState<MenuView>("main");
-  const { enterDecorateMode } = useGameState();
+  const { enterDecorateMode, setShowEviction, setShowNuke } = useGameState();
   const { simulateDays } = useUser();
 
   const menuTitles: Record<MenuView, string> = {
@@ -84,7 +84,7 @@ export function BaseMenu() {
         <MenuButton
           text="Next day"
           Icon={SunMoon}
-          onClick={() => simulateDays(1)}
+          onClick={() => simulateDays(1, () => setShowEviction(true), () => setShowNuke(true))}
         />
         <MenuButton
           text="Gamble"

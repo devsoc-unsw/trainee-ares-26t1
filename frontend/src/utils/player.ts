@@ -1,3 +1,5 @@
+import type { User } from "../api/api";
+
 const normalizeSprite = (sprite: unknown) => {
   const value = typeof sprite === "string" ? sprite.toLowerCase() : "orange";
   return ["black", "orange", "waiter"].includes(value) ? value : "orange";
@@ -24,3 +26,13 @@ export function getDayDiff(start: string, current: string) {
   const ms = new Date(current).getTime() - new Date(start).getTime();
   return Math.floor(ms / (1000 * 60 * 60 * 24));
 }
+
+export const getDebtDays = (
+  debtStartDate: string | null,
+  referenceDate: Date = new Date()
+): number => {
+  if (!debtStartDate) return 0;
+  return Math.floor(
+    (referenceDate.getTime() - new Date(debtStartDate).getTime()) / 86400000
+  );
+};

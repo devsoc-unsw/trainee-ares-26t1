@@ -1,17 +1,21 @@
 import { BaseMenu } from "../components/menu/BaseMenu";
 import WoodContainer from "../components/WoodContainer";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import GameMap from "../components/map/GameMap";
 import KeyHint from "../components/KeyHint";
 import { useUser } from "../context/UserContext";
 import { useGameState } from "../context/GameStateContext";
-import { getDayDiff } from "../utils/player";
+import { getDayDiff, getDebtDays } from "../utils/player";
+import { EvictionNotice } from "./EvictionNotice";
+import { CafeNuked } from "./CafeNuked";
 
 const DashboardPage = () => {
-  const { menuOpen, setMenuOpen, toggleMenu, mode } = useGameState();
-  const { user, currentDate, activeDate } = useUser();
+  const { menuOpen, setMenuOpen, toggleMenu, mode, showEviction, setShowEviction, showNuke, setShowNuke } = useGameState();
+  const { user, currentDate, activeDate, debtStartDate } = useUser();
   const userData = user!;
   const daysSimulated = getDayDiff(currentDate, activeDate.toISOString());
+
+  const debtDays = getDebtDays(debtStartDate);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -26,11 +30,20 @@ const DashboardPage = () => {
     };
   }, [toggleMenu, mode]);
 
-  console.log("user:", JSON.stringify(userData));
-  console.log("money:", userData.money, typeof userData.money);
-
   return (
     <div className="relative flex flex-col min-h-screen min-w-screen">
+        {showEviction && (
+          <EvictionNotice
+            debtDays={debtDays}
+            onDismiss={() => setShowEviction(false)}
+          />
+        )}
+        {showNuke && (
+          <CafeNuked onReset={() => {
+            setShowNuke(false);
+          }} />
+        )}
+
       {/*MAP (leave here to put it under all ui elements) */}
       <div className="w-full h-full absolute inset-0 overflow-hidden">
         <GameMap />

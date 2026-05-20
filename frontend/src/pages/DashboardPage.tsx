@@ -10,7 +10,16 @@ import { EvictionNotice } from "./EvictionNotice";
 import { CafeNuked } from "./CafeNuked";
 
 const DashboardPage = () => {
-  const { menuOpen, setMenuOpen, toggleMenu, mode, showEviction, setShowEviction, showNuke, setShowNuke } = useGameState();
+  const {
+    menuOpen,
+    setMenuOpen,
+    toggleMenu,
+    mode,
+    showEviction,
+    setShowEviction,
+    showNuke,
+    setShowNuke,
+  } = useGameState();
   const { user, currentDate, activeDate, debtStartDate } = useUser();
   const userData = user!;
   const daysSimulated = getDayDiff(currentDate, activeDate.toISOString());
@@ -32,17 +41,19 @@ const DashboardPage = () => {
 
   return (
     <div className="relative flex flex-col min-h-screen min-w-screen">
-        {showEviction && (
-          <EvictionNotice
-            debtDays={debtDays}
-            onDismiss={() => setShowEviction(false)}
-          />
-        )}
-        {showNuke && (
-          <CafeNuked onReset={() => {
+      {showEviction && (
+        <EvictionNotice
+          debtDays={debtDays}
+          onDismiss={() => setShowEviction(false)}
+        />
+      )}
+      {showNuke && (
+        <CafeNuked
+          onReset={() => {
             setShowNuke(false);
-          }} />
-        )}
+          }}
+        />
+      )}
 
       {/*MAP (leave here to put it under all ui elements) */}
       <div className="w-full h-full absolute inset-0 overflow-hidden">

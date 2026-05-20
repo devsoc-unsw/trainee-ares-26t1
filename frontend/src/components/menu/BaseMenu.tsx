@@ -84,7 +84,13 @@ export function BaseMenu() {
         <MenuButton
           text="Next day"
           Icon={SunMoon}
-          onClick={() => simulateDays(1, () => setShowEviction(true), () => setShowNuke(true))}
+          onClick={() =>
+            simulateDays(
+              1,
+              () => setShowEviction(true),
+              () => setShowNuke(true),
+            )
+          }
         />
         <MenuButton
           text="Gamble"

@@ -29,10 +29,10 @@ export function getDayDiff(start: string, current: string) {
 
 export const getDebtDays = (
   debtStartDate: string | null,
-  referenceDate: Date = new Date()
+  referenceDate: Date = new Date(),
 ): number => {
   if (!debtStartDate) return 0;
   return Math.floor(
-    (referenceDate.getTime() - new Date(debtStartDate).getTime()) / 86400000
+    (referenceDate.getTime() - new Date(debtStartDate).getTime()) / 86400000,
   );
 };

@@ -1,9 +1,8 @@
 // UserContext.tsx
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useContext, useState, type ReactNode } from "react";
 import type { User } from "../types/UserTypes";
 import { DUMMY_LAYERS } from "../types/MapTypes";
-import { fetchUser } from "../api/api";
 
 interface UserContextType {
   user: User;
@@ -59,21 +58,6 @@ const UserContext = createContext<UserContextType | null>(null);
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User>(defaultUser);
-
-  // Fetches user from db
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const data = await fetchUser() as any;
-        console.log("fetching user", data);
-        setUser(data.user);
-      } catch (err) {
-        console.error("Failed to fetch user", err);
-      }
-    };
-
-    loadUser();
-  }, []);
 
   const updateMoney = (amount: number) => {
     setUser((prev) => ({

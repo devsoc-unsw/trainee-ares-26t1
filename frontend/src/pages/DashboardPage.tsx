@@ -5,10 +5,11 @@ import GameMap from "../components/map/GameMap";
 import KeyHint from "../components/KeyHint";
 import { useUser } from "../context/UserContext";
 import { useGameState } from "../context/GameStateContext";
+import { fetchUser } from "../api/api";
 
 const DashboardPage = () => {
   const { menuOpen, setMenuOpen, toggleMenu, mode } = useGameState();
-  const { user } = useUser();
+  const { user, setUser } = useUser();
 
   console.log("user:", user);
 
@@ -22,6 +23,21 @@ const DashboardPage = () => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [toggleMenu]);
+
+    // Fetches user from db
+    useEffect(() => {
+      const loadUser = async () => {
+        try {
+          const data = await fetchUser() as any;
+          console.log("fetching user", data);
+          setUser(data.user);
+        } catch (err) {
+          console.error("Failed to fetch user", err);
+        }
+      };
+  
+      loadUser();
+    }, []);
 
   return (
     <div className="relative flex flex-col min-h-screen min-w-screen">

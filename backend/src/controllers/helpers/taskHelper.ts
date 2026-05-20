@@ -5,6 +5,9 @@ import { CustomVariant, TaskType } from "../../constants/taskConstants";
 
 // Creates an object containing details for a task
 export const createTaskEntry = (req: any, name: string, type: TaskType) => {
+  console.log("type received:", type);
+  console.log("TaskType.Daily:", TaskType.Daily);
+  console.log("strict equal:", type === TaskType.Daily);
   let task = null;
   let taskEntry = {};
   switch (type) {
@@ -63,6 +66,7 @@ export const createTaskEntry = (req: any, name: string, type: TaskType) => {
         difficulty: task.getDifficulty(),
         deadline: task.getDeadline(),
       };
+      break;
     }
 
     default:

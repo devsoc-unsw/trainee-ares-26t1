@@ -12,9 +12,9 @@ export enum TaskType {
 }
 
 export enum CustomVariant {
-  Easy = "Easy",
-  Medium = "Medium",
-  Hard = "Hard",
+  Easy = "easy",
+  Medium = "medium",
+  Hard = "hard",
 }
 
 export enum DayOfWk {

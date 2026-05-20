@@ -10,8 +10,10 @@ import { TILE_TYPES } from "../types/MapTypes";
 import {
   buyItem as apiBuyItem,
   updateUser as apiUpdateUser,
+  createTask as apiCreateTask,
   fetchUser,
   type User,
+  type CreateTaskPayload,
 } from "../api/api";
 
 import { useNavigate } from "react-router-dom";
@@ -37,6 +39,7 @@ interface UserContextType {
   activeDate: Date;
 
   isLoading: boolean;
+  addTask: (payload: CreateTaskPayload) => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | null>(null);
@@ -178,6 +181,16 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const addTask = async (payload: Parameters<typeof apiCreateTask>[0]) => {
+  if (!user) return;
+  try {
+    const newTask = await apiCreateTask(payload);
+    setUser(prev => prev ? { ...prev, tasks: [...prev.tasks, newTask] } : null);
+  } catch (err) {
+    console.error("failed to create task", err);
+  }
+};
+
   return (
     <UserContext.Provider
       value={{
@@ -198,6 +211,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         activeDate,
         isLoading,
         saveMap,
+        addTask,
       }}
     >
       {children}

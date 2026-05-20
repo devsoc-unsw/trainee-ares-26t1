@@ -106,3 +106,11 @@ const toInventoryArray = (
     tileId: Number(tileId),
     count,
   }));
+
+  export type CreateTaskPayload =
+  | { name: string; type: "Daily" }
+  | { name: string; type: "Weekly"; dayOfWk: number; deadline?: string }
+  | { name: string; type: "Custom"; difficulty: "easy" | "medium" | "hard"; deadline: string };
+
+export const createTask = async (payload: CreateTaskPayload): Promise<Task> =>
+  post<Task>("/task/create", payload);

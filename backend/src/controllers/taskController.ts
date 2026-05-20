@@ -4,6 +4,7 @@ import { createTaskEntry } from "./helpers/taskHelper";
 export const createTask = async (req: any, res: Response) => {
   try {
     const { name, type } = req.body;
+    console.log("createTask body:", req.body);
     const user = req.user;
 
     const taskEntry = createTaskEntry(req, name, type);
@@ -16,6 +17,7 @@ export const createTask = async (req: any, res: Response) => {
     await user.save();
     return res.status(201).json(taskEntry);
   } catch (err) {
+    console.error("createTask error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };

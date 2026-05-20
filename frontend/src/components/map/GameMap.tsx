@@ -48,7 +48,7 @@ const GameMap = () => {
     };
   }, [mode, editLayers, editInventory, saveMap, setMode]);
 
-  // FIX 3: Fall back directly to the real user data if edit state isn't active/populated yet
+
   const currentLayers =
     mode === "decorate" && editLayers ? editLayers : userData.layers;
   const currentInventory =

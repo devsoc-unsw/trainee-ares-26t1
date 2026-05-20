@@ -4,11 +4,13 @@ import { useState } from "react";
 import { authLogin } from "../api/api";
 
 const LoginPage = () => {
-  const [loginRes, setLoginRes] = useState("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("")
+  // const [loginRes, setLoginRes] = useState("");
   const handleLogin = async () => {
     try {
       const data = await authLogin();
-      setLoginRes(data.message);
+      // setLoginRes(data.message);
     } catch (err) {
       console.log(err);
     }
@@ -25,6 +27,7 @@ const LoginPage = () => {
               type="string"
               required
               className="flex border-1 rounded-md"
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div>
@@ -34,13 +37,14 @@ const LoginPage = () => {
               type="password"
               required
               className="flex border-1 rounded-md"
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <div className="flex justify-center pt-3">
             <button
               type="submit"
               className="flex justify-center border-2 rounded-xl w-[20vw] md:w-[10vw]"
-              onClick={handleLogin}
+              onClick={(e) => handleLogin(e)}
             >
               Login
             </button>

@@ -19,6 +19,7 @@ import ShopMenu from "./ShopMenu";
 import DecorateMenu from "./DecorateMenu";
 import AddTaskMenu from "./AddTaskMenu";
 import ViewTaskMenu from "./ViewTaskMenu";
+import { useNavigate } from "react-router-dom";
 
 type MenuView =
   | "main"
@@ -38,6 +39,12 @@ export function BaseMenu() {
     decorate: "Decorate",
     addTask: "Add Task",
     viewTask: "View Tasks",
+  };
+
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
   };
 
   const menus: Record<MenuView, React.ReactNode> = {
@@ -71,7 +78,7 @@ export function BaseMenu() {
         <MenuButton
           text="Log out"
           Icon={LogOut}
-          onClick={() => console.log("log out!")}
+          onClick={handleLogout}
         />
       </div>
     ),

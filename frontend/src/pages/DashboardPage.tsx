@@ -8,20 +8,26 @@ import { useGameState } from "../context/GameStateContext";
 
 const DashboardPage = () => {
   const { menuOpen, setMenuOpen, toggleMenu, mode } = useGameState();
+
   const { user } = useUser();
 
   console.log("user:", user);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.code === "Tab") {
+      // tab only works in play mode
+      if (event.code === "Tab" && mode === "play") {
         event.preventDefault();
         toggleMenu();
       }
     };
+
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [toggleMenu]);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [toggleMenu, mode]);
 
   return (
     <div className="relative flex flex-col min-h-screen min-w-screen">
@@ -31,19 +37,31 @@ const DashboardPage = () => {
       </div>
 
       {/* TOP BAR */}
-      <div className="sticky top-0 w-full md:px-20 px-10 py-5">
-        <div className="flex flex-row justify-between items-center">
-          {/* HELP TEXT */}
-          <div className="flex flex-col gap-2">
-            <KeyHint keyName="Tab" action="to toggle menu" />
-            <KeyHint keyName="w, a, s, d" action="to move" />
-          </div>
+      <div className="sticky top-0 w-full md:px-20 px-10 py-5 relative">
+        {/* HELP TEXT */}
+        <div className="flex flex-col gap-2">
+          {mode === "play" && (
+            <>
+              <KeyHint keyName="Tab" action="to toggle menu" />
+              <KeyHint keyName="w, a, s, d" action="to move" />
+            </>
+          )}
 
-          {/* MONEY */}
+          {mode === "decorate" && (
+            <>
+              <KeyHint keyName="Q" action="to put away item" />
+              <KeyHint keyName="Enter" action="to save" />
+              <KeyHint keyName="Esc" action="to cancel" />
+            </>
+          )}
+        </div>
+
+        {/* MONEY */}
+        <div className="absolute top-5 right-10 md:right-20">
           <WoodContainer>
             <div className="flex flex-row w-24 h-10 items-center justify-between px-3">
               <p className="text-xl">$</p>
-              <p className="text-xl tabular-nums">{user.money}</p>
+              <p className="text-xl tabular-nums font-mono">{user.money}</p>
             </div>
           </WoodContainer>
         </div>
@@ -52,7 +70,7 @@ const DashboardPage = () => {
       {/* BODY */}
       <div className="flex flex-row mt-5 w-screen pt-20">
         {/* MENU BUTTON */}
-        {!menuOpen && (
+        {mode === "play" && !menuOpen && (
           <button
             className="absolute -left-3 top-1/2 -translate-y-1/2 z-20"
             onClick={() => setMenuOpen(true)}
@@ -66,7 +84,7 @@ const DashboardPage = () => {
         )}
 
         {/* BASE MENU */}
-        {menuOpen && <BaseMenu />}
+        {mode === "play" && menuOpen && <BaseMenu />}
       </div>
     </div>
   );

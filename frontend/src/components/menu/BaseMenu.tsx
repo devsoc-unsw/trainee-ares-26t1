@@ -16,27 +16,21 @@ import MenuHeader from "./MenuHeader";
 
 // menus
 import ShopMenu from "./ShopMenu";
-import DecorateMenu from "./DecorateMenu";
 import AddTaskMenu from "./AddTaskMenu";
 import ViewTaskMenu from "./ViewTaskMenu";
 import { useNavigate } from "react-router-dom";
+import { useGameState } from "../../context/GameStateContext";
 
-type MenuView =
-  | "main"
-  | "settings"
-  | "shop"
-  | "decorate"
-  | "addTask"
-  | "viewTask";
+type MenuView = "main" | "settings" | "shop" | "addTask" | "viewTask";
 
 export function BaseMenu() {
   const [menuContent, setMenuContent] = useState<MenuView>("main");
+  const { enterDecorateMode } = useGameState();
 
   const menuTitles: Record<MenuView, string> = {
     main: "Menu",
     settings: "Settings",
     shop: "Shop",
-    decorate: "Decorate",
     addTask: "Add Task",
     viewTask: "View Tasks",
   };
@@ -63,7 +57,7 @@ export function BaseMenu() {
         <MenuButton
           text="Decorate"
           Icon={Paintbrush}
-          onClick={() => setMenuContent("decorate")}
+          onClick={enterDecorateMode}
         />
         <MenuButton
           text="Add Task"
@@ -75,17 +69,12 @@ export function BaseMenu() {
           Icon={Calendar}
           onClick={() => setMenuContent("viewTask")}
         />
-        <MenuButton
-          text="Log out"
-          Icon={LogOut}
-          onClick={handleLogout}
-        />
+        <MenuButton text="Log out" Icon={LogOut} onClick={handleLogout} />
       </div>
     ),
 
     settings: <SettingsMenu onBack={() => setMenuContent("main")} />,
     shop: <ShopMenu onBack={() => setMenuContent("main")} />,
-    decorate: <DecorateMenu onBack={() => setMenuContent("main")} />,
     addTask: <AddTaskMenu onBack={() => setMenuContent("main")} />,
     viewTask: <ViewTaskMenu onBack={() => setMenuContent("main")} />,
   };

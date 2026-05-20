@@ -1,43 +1,82 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Player } from "../sprites/Player";
 import { DecorateMap } from "./DecorateMap";
 import { GameGrid } from "./GameGrid";
-import { TILE_TYPES, type InventoryItem } from "../../types/MapTypes";
+import { TILE_TYPES } from "../../types/MapTypes";
 import ZoomableContainer from "./ZoomableContainer";
 import FloorGrid from "./FloorGrid";
 import { useUser } from "../../context/UserContext";
 import { getPlayerSprite } from "../../utils/player";
+import { useGameState } from "../../context/GameStateContext";
 
 const GameMap = () => {
-  const { user, setUser } = useUser();
-  const [decorating, setDecorating] = useState(false);
-  const [inventory, setInventory] = useState<InventoryItem[]>(user.inventory);
+  const { user, updateLayers, updateInventory } = useUser();
+
+  const { mode, setMode } = useGameState();
+
+  const [tempLayers, setTempLayers] = useState(user.layers);
+  const [tempInventory, setTempInventory] = useState(user.inventory);
+
+  useEffect(() => {
+    if (mode === "decorate") {
+      setTempLayers(structuredClone(user.layers));
+      setTempInventory(structuredClone(user.inventory));
+    }
+  }, [mode, user.layers, user.inventory]);
+
+  useEffect(() => {
+    if (mode !== "decorate") return;
+
+    const handleKeyDown = async (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        await updateLayers(tempLayers);
+        await updateInventory(tempInventory);
+
+        setMode("play");
+      }
+
+      if (e.key === "Escape") {
+        setTempLayers(structuredClone(user.layers));
+        setTempInventory(structuredClone(user.inventory));
+
+        setMode("play");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [
+    mode,
+    tempLayers,
+    tempInventory,
+    user.layers,
+    user.inventory,
+    updateLayers,
+    updateInventory,
+    setMode,
+  ]);
 
   return (
     <ZoomableContainer>
       <div className="relative">
         <FloorGrid
-          rows={user.layers.layer0.length}
-          cols={user.layers.layer0[0].length}
+          rows={tempLayers.layer0.length}
+          cols={tempLayers.layer0[0].length}
           tileSize={50}
         />
-        {/* Decorate mode */}
-        {decorating && (
+
+        {mode === "decorate" ? (
           <DecorateMap
-            layers={user.layers}
-            onLayersChange={(newLayers) =>
-              setUser((prev) => ({
-                ...prev,
-                layers: newLayers,
-              }))
-            }
-            inventory={inventory}
-            onInventoryChange={setInventory}
+            layers={tempLayers}
+            onLayersChange={setTempLayers}
+            inventory={tempInventory}
+            onInventoryChange={setTempInventory}
             tileSize={50}
           />
-        )}
-        {/* Normal view */}
-        {!decorating && (
+        ) : (
           <>
             <GameGrid layers={user.layers} tiles={TILE_TYPES} tileSize={50} />
 
@@ -50,7 +89,6 @@ const GameMap = () => {
             />
           </>
         )}
-        s
       </div>
     </ZoomableContainer>
   );

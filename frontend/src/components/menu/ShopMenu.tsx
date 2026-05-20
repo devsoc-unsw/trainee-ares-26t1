@@ -11,7 +11,7 @@ export const ShopMenu = ({ onBack }: ShopMenuProps) => {
       {Object.values(TILE_TYPES).map((tile) => (
         <ItemButton
           key={tile.id}
-          text={tile.name + " " + "$" + tile.price as string}
+          text={(tile.name + " " + "$" + tile.price) as string}
           icon={tile.sprite}
           onClick={() => console.log(tile)}
         />

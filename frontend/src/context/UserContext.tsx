@@ -1,6 +1,12 @@
 // UserContext.tsx
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
 import type { User } from "../types/UserTypes";
 import { DUMMY_LAYERS } from "../types/MapTypes";
 import { fetchUser } from "../api/api";
@@ -8,8 +14,11 @@ import { fetchUser } from "../api/api";
 interface UserContextType {
   user: User;
   setUser: React.Dispatch<React.SetStateAction<User>>;
+
   updateMoney: (amount: number) => void;
-  updateLayers: (layers: User["layers"]) => void;
+
+  updateLayers: (layers: User["layers"]) => Promise<void>;
+  updateInventory: (inventory: User["inventory"]) => Promise<void>;
 }
 
 const defaultUser: User = {
@@ -22,9 +31,9 @@ const defaultUser: User = {
 
   inventory: [
     { tileId: 1, count: 2 },
-    { tileId: 100, count: 1 },
-    { tileId: 102, count: 3 },
-    { tileId: 104, count: 1 },
+    { tileId: 10, count: 1 },
+    { tileId: 12, count: 3 },
+    { tileId: 14, count: 1 },
   ],
 
   tasks: [
@@ -64,7 +73,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const data = await fetchUser() as any;
+        const data = (await fetchUser()) as any;
         console.log("fetching user", data);
         setUser(data.user);
       } catch (err) {
@@ -82,15 +91,38 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }));
   };
 
-  const updateLayers = (layers: User["layers"]) => {
+  const updateLayers = async (layers: User["layers"]) => {
     setUser((prev) => ({
       ...prev,
       layers,
     }));
+
+    try {
+      // await apiSaveLayers(layers);
+      console.log("saving layers", layers);
+    } catch (err) {
+      console.error("failed to save layers", err);
+    }
+  };
+
+  const updateInventory = async (inventory: User["inventory"]) => {
+    setUser((prev) => ({
+      ...prev,
+      inventory,
+    }));
+
+    try {
+      // await apiSaveInventory(inventory);
+      console.log("saving inventory", inventory);
+    } catch (err) {
+      console.error("failed to save inventory", err);
+    }
   };
 
   return (
-    <UserContext.Provider value={{ user, setUser, updateMoney, updateLayers }}>
+    <UserContext.Provider
+      value={{ user, setUser, updateMoney, updateLayers, updateInventory }}
+    >
       {children}
     </UserContext.Provider>
   );

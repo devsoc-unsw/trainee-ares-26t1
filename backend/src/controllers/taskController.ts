@@ -1,5 +1,6 @@
 import { Response } from "express";
 import { createTaskEntry } from "./helpers/taskHelper";
+import { TaskType } from "../constants/taskConstants";
 
 export const createTask = async (req: any, res: Response) => {
   try {
@@ -40,6 +41,30 @@ export const deleteTask = async (req: any, res: Response) => {
     await user.save();
     return res.status(200).json({});
   } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+export const completeTask = async (req: any, res: Response) => {
+  try {
+    const { id } = req.body;
+    const user = req.user;
+
+    const task = user.tasks.find((t: any) => t.id === id);
+    if (!task) return res.status(404).json({ message: "Task not found" });
+
+    user.money += task.amount;
+
+    if (task.type === TaskType.Custom) {
+      user.tasks = user.tasks.filter((t: any) => t.id !== id);
+    } else {
+      task.lastCompleted = new Date();
+    }
+
+    await user.save();
+    return res.status(200).json({ user });
+  } catch (err) {
+    console.error("completeTask error:", err);
     res.status(500).json({ message: "Server error" });
   }
 };

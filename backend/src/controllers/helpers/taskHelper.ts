@@ -18,6 +18,7 @@ export const createTaskEntry = (req: any, name: string, type: TaskType) => {
         name: task.getName(),
         type: task.getType(),
         amount: task.getAmount(),
+        lastCompleted: task.getLastCompleted(),
       };
       break;
     }

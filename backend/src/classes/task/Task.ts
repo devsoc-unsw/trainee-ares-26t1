@@ -5,12 +5,14 @@ class Task {
   private id: string;
   private name: string;
   private type: TaskType;
+  private lastCompleted: Date | null;
 
 
   constructor(name: string, type: TaskType) {
     this.id = Task.generateId();
     this.name = name;
     this.type = type;
+    this.lastCompleted = null;
   }
 
   private static generateId(): string {
@@ -31,6 +33,14 @@ class Task {
 
   setName(newName: string): void {
     this.name = newName;
+  }
+
+  getLastCompleted(): Date | null {
+    return this.lastCompleted;
+  }
+
+  setLastCompleted(date: Date): void {
+    this.lastCompleted = date;
   }
 }
 

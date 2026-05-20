@@ -12,7 +12,7 @@ type Item = {
   id: number;
 };
 
-type Task = {
+export type Task = {
   id: number;
   type: string; // type of the task (i.e daily, weekly, custom)
   name: string; // name of the task
@@ -20,6 +20,7 @@ type Task = {
   difficulty?: string; // Hard Easy, etc
   dayOfWk?: number; // for weekly deadline
   deadline?: Date; // for non daily tasks
+  lastCompleted?: Date;
 };
 
 export type User = {
@@ -107,10 +108,20 @@ const toInventoryArray = (
     count,
   }));
 
-  export type CreateTaskPayload =
+export type CreateTaskPayload =
   | { name: string; type: "Daily" }
   | { name: string; type: "Weekly"; dayOfWk: number; deadline?: string }
-  | { name: string; type: "Custom"; difficulty: "easy" | "medium" | "hard"; deadline: string };
+  | {
+      name: string;
+      type: "Custom";
+      difficulty: "easy" | "medium" | "hard";
+      deadline: string;
+    };
 
 export const createTask = async (payload: CreateTaskPayload): Promise<Task> =>
   post<Task>("/task/create", payload);
+
+export const completeTask = async (id: string): Promise<User> => {
+  const res = await post<{ user: any }>("/task/complete", { id });
+  return { ...res.user, inventory: toInventoryRecord(res.user.inventory) };
+};

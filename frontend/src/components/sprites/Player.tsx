@@ -103,7 +103,7 @@ export function Player({
     const onDown = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement).tagName;
       if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
-      
+
       if (KEY_MAP[e.key]) {
         e.preventDefault();
         heldKeys.current.add(e.key);

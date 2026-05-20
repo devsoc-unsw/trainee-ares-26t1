@@ -48,7 +48,6 @@ const GameMap = () => {
     };
   }, [mode, editLayers, editInventory, saveMap, setMode]);
 
-
   const currentLayers =
     mode === "decorate" && editLayers ? editLayers : userData.layers;
   const currentInventory =

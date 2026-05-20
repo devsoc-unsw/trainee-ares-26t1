@@ -98,7 +98,7 @@ export function BaseMenu() {
     settings: <SettingsMenu onBack={() => setMenuContent("main")} />,
     shop: <ShopMenu />,
     addTask: <AddTaskMenu onBack={() => setMenuContent("main")} />,
-    viewTask: <ViewTaskMenu onBack={() => setMenuContent("main")} />,
+    viewTask: <ViewTaskMenu />,
     gambling: <GamblingMenu />,
   };
 

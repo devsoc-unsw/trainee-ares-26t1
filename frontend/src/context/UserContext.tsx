@@ -11,6 +11,7 @@ import {
   buyItem as apiBuyItem,
   updateUser as apiUpdateUser,
   createTask as apiCreateTask,
+  completeTask as apiCompleteTask,
   fetchUser,
   type User,
   type CreateTaskPayload,
@@ -21,58 +22,52 @@ import { useNavigate } from "react-router-dom";
 interface UserContextType {
   loadUser: () => Promise<void>;
   user: User | null;
-  activeUser: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
 
-  updateMoney: (amount: number) => void;
+  updateMoney: (amount: number) => Promise<void>;
   saveMap: (
     layers: User["layers"],
     inventory: User["inventory"],
   ) => Promise<void>;
-
   buyItem: (id: number) => Promise<void>;
+  addTask: (payload: CreateTaskPayload) => Promise<void>;
+  completeTask: (id: string) => Promise<void>;
 
   simulateDays: (days: number) => void;
   clearSimulation: () => void;
   simulated: boolean;
   currentDate: string;
   activeDate: Date;
-
   isLoading: boolean;
-  addTask: (payload: CreateTaskPayload) => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | null>(null);
-
 export function UserProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
+  const [realUser, setRealUser] = useState<User | null>(null);
   const [simulatedUser, setSimulatedUser] = useState<User | null>(null);
   const [simulatedCurrentDate, setSimulatedCurrentDate] = useState<Date | null>(
     null,
   );
-  const [currentDate, setCurrentDate] = useState<string>(
-    new Date().toISOString(),
-  );
+  const [currentDate] = useState<string>(new Date().toISOString());
+  const [simulatedDays, setSimulatedDays] = useState(0);
 
-  const activeUser = simulatedUser ?? user;
+  const user = simulatedUser ?? realUser;
   const activeDate = simulatedCurrentDate ?? new Date(currentDate);
 
   const navigate = useNavigate();
 
   const loadUser = async () => {
     const token = localStorage.getItem("token");
-
     if (!token) {
       setIsLoading(false);
       return;
     }
-
     try {
       setIsLoading(true);
-      setUser(null);
+      setRealUser(null);
       const data = await fetchUser();
-      setUser(data);
+      setRealUser(data);
     } catch (err) {
       console.error("Failed to load user", err);
       localStorage.removeItem("token");
@@ -87,11 +82,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const updateMoney = async (amount: number) => {
-    if (!user) return;
-    const newMoney = user.money + amount;
-
-    setUser((prev) => (prev ? { ...prev, money: newMoney } : null));
-
+    if (!realUser) return;
+    const newMoney = realUser.money + amount;
+    setRealUser((prev) => (prev ? { ...prev, money: newMoney } : null));
     try {
       await apiUpdateUser({ money: newMoney });
     } catch (err) {
@@ -99,81 +92,12 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  // ─────────────────────────────────────────────
-  // SIMULATION
-  // ─────────────────────────────────────────────
-  const simulateDays = (days: number) => {
-    const activeTarget = simulatedUser ?? user;
-    if (!activeTarget) return;
-
-    const baseUser = structuredClone(activeTarget);
-    const baseDate = new Date(simulatedCurrentDate ?? currentDate);
-
-    let updatedUser = structuredClone(baseUser);
-    let current = new Date(baseDate);
-    let money = updatedUser.money;
-
-    for (let i = 0; i < days; i++) {
-      current.setDate(current.getDate() + 1);
-      let dailyPenalty = 0;
-
-      updatedUser.tasks.forEach((task) => {
-        switch (task.type) {
-          case "Daily":
-            dailyPenalty += task.amount;
-            break;
-
-          case "Weekly":
-            if (task.dayOfWk === current.getDay()) dailyPenalty += task.amount;
-            break;
-
-          case "Custom":
-            if (task.deadline && current > new Date(task.deadline)) {
-              dailyPenalty += task.amount;
-            }
-            break;
-        }
-      });
-
-      money -= dailyPenalty;
-    }
-
-    updatedUser.money = money;
-
-    setSimulatedUser(updatedUser);
-    setSimulatedCurrentDate(current);
-  };
-
-  const clearSimulation = () => {
-    setSimulatedUser(null);
-    setSimulatedCurrentDate(null);
-  };
-
-  const buyItem = async (id: number) => {
-    const tile = TILE_TYPES[id];
-    if (!tile) return;
-
-    const baseUser = simulatedUser ?? user;
-    if (!baseUser || baseUser.money < tile.price) {
-      console.warn("Not enough money or user not loaded");
-      return;
-    }
-
-    try {
-      const updatedUser = await apiBuyItem(id);
-      setUser(updatedUser);
-    } catch (err) {
-      console.error("buyItem failed", err);
-    }
-  };
-
   const saveMap = async (
     layers: User["layers"],
     inventory: User["inventory"],
   ) => {
-    if (!user) return;
-    setUser((prev) => (prev ? { ...prev, layers, inventory } : null));
-
+    if (!realUser) return;
+    setRealUser((prev) => (prev ? { ...prev, layers, inventory } : null));
     try {
       await apiUpdateUser({ layers, inventory });
     } catch (err) {
@@ -181,37 +105,106 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const addTask = async (payload: Parameters<typeof apiCreateTask>[0]) => {
-  if (!user) return;
-  try {
-    const newTask = await apiCreateTask(payload);
-    setUser(prev => prev ? { ...prev, tasks: [...prev.tasks, newTask] } : null);
-  } catch (err) {
-    console.error("failed to create task", err);
-  }
-};
+  const buyItem = async (id: number) => {
+    const tile = TILE_TYPES[id];
+    if (!tile) return;
+    if (!realUser || realUser.money < tile.price) {
+      console.warn("Not enough money or user not loaded");
+      return;
+    }
+    try {
+      const updatedUser = await apiBuyItem(id);
+      setRealUser(updatedUser);
+    } catch (err) {
+      console.error("buyItem failed", err);
+    }
+  };
+
+  const addTask = async (payload: CreateTaskPayload) => {
+    if (!realUser) return;
+    try {
+      const newTask = await apiCreateTask(payload);
+      setRealUser((prev) =>
+        prev ? { ...prev, tasks: [...prev.tasks, newTask] } : null,
+      );
+    } catch (err) {
+      console.error("failed to create task", err);
+    }
+  };
+
+  const completeTask = async (id: string) => {
+    if (!realUser) return;
+    try {
+      const updatedUser = await apiCompleteTask(id);
+      setRealUser(updatedUser);
+    } catch (err) {
+      console.error("failed to complete task", err);
+    }
+  };
+
+  const simulateDays = (days: number) => {
+    if (!realUser) return;
+    if (days === 0) {
+      clearSimulation();
+      return;
+    }
+
+    const baseUser = structuredClone(realUser);
+    const totalDays = simulatedDays + days;
+    const baseDate = new Date(currentDate);
+    let money = baseUser.money;
+    let current = new Date(baseDate);
+
+    for (let i = 0; i < totalDays; i++) {
+      current.setDate(current.getDate() + 1);
+      let dailyPenalty = 0;
+
+      baseUser.tasks.forEach((task) => {
+        switch (task.type) {
+          case "Daily":
+            dailyPenalty += task.amount;
+            break;
+          case "Weekly":
+            if (task.dayOfWk === current.getDay()) dailyPenalty += task.amount;
+            break;
+          case "Custom":
+            if (task.deadline && current > new Date(task.deadline))
+              dailyPenalty += task.amount;
+            break;
+        }
+      });
+
+      money -= dailyPenalty;
+    }
+
+    setSimulatedDays(totalDays);
+    setSimulatedUser({ ...baseUser, money });
+    setSimulatedCurrentDate(current);
+  };
+
+  const clearSimulation = () => {
+    setSimulatedUser(null);
+    setSimulatedCurrentDate(null);
+    setSimulatedDays(0);
+  };
 
   return (
     <UserContext.Provider
       value={{
         loadUser,
-        user,
-        activeUser,
-        setUser,
-
+        user, // exposes activeUser as user
+        setUser: setRealUser, // writes always go to real user
         updateMoney,
+        saveMap,
         buyItem,
-
+        addTask,
+        completeTask,
         simulateDays,
         clearSimulation,
-
         simulated: simulatedUser != null,
-
         currentDate,
         activeDate,
         isLoading,
-        saveMap,
-        addTask,
       }}
     >
       {children}

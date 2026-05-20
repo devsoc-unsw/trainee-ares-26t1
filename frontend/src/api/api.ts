@@ -9,8 +9,7 @@ type Auth = {
 };
 
 type Item = {
-  name: string;
-  amount: number;
+  id: number;
 };
 
 type Task = {
@@ -79,3 +78,15 @@ export const fetchUser = async (): Promise<User> =>
   get<User>("/user/fetchUser", {
     Authorization: `Bearer ${localStorage.getItem("token")}`,
   });
+
+export const buyItem = async (id: number): Promise<Item> =>
+  post<Item>(
+    "/item/buy",
+    {
+      id,
+    },
+    {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+      "Content-Type": "application/json",
+    },
+  );

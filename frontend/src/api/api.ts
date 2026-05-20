@@ -24,12 +24,22 @@ type Task = {
 };
 
 type User = {
-  name: string;
+  id: string;
   email: string;
   money: number;
-  inventory: Item[];
+  sprite: string;
+
+  layers: {
+    layer0: (number | null)[][];
+    layer1: (number | null)[][];
+    layer2: (number | null)[][];
+  };
+
+  inventory: Record<string, number>;
+
   tasks: Task[];
-  debtStartDate: Date;
+
+  debtStartDate: string | null;
 };
 
 export const testApi = async (): Promise<HelloResponse> =>
@@ -41,8 +51,8 @@ export const authLogin = async (
 ): Promise<Auth> =>
   post<Auth>(
     "/auth/login",
-    { 
-      email, 
+    {
+      email,
       password,
     },
     {
@@ -65,4 +75,7 @@ export const authRegister = async (
     },
   );
 
-export const fetchUser = async (): Promise<User> => get<User>("/user");
+export const fetchUser = async (): Promise<User> =>
+  get<User>("/user/fetchUser", {
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  });

@@ -22,7 +22,7 @@ export const register = async (req: Request, res: Response) => {
     const user = await User.create({
       email: email,
       password: hashedPassword,
-      money: 0,
+      money: 100,
       sprite: "orange",
     
       layer0: Array.from({ length: 10 }, () =>

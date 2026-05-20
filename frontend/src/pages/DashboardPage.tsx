@@ -6,47 +6,28 @@ import KeyHint from "../components/KeyHint";
 import { useUser } from "../context/UserContext";
 import { useGameState } from "../context/GameStateContext";
 import { getDayDiff } from "../utils/player";
-import { fetchUser } from "../api/api";
 
 const DashboardPage = () => {
   const { menuOpen, setMenuOpen, toggleMenu, mode } = useGameState();
-
-  const { activeUser, user, setUser } = useUser();
-
-  const daysSimulated = getDayDiff(user.currentDate, activeUser.currentDate);
-
-  console.log("user:", activeUser);
+  const { user, currentDate, activeDate } = useUser();
+  const userData = user!;
+  const daysSimulated = getDayDiff(currentDate, activeDate.toISOString());
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // tab only works in play mode
       if (event.code === "Tab" && mode === "play") {
         event.preventDefault();
         toggleMenu();
       }
     };
-
     window.addEventListener("keydown", handleKeyDown);
-
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [toggleMenu, mode]);
 
-    // Fetches user from db
-    useEffect(() => {
-      const loadUser = async () => {
-        try {
-          const data = await fetchUser() as any;
-          console.log("fetching user", data);
-          setUser(data.user);
-        } catch (err) {
-          console.error("Failed to fetch user", err);
-        }
-      };
-  
-      loadUser();
-    }, []);
+  console.log("user:", JSON.stringify(userData));
+  console.log("money:", userData.money, typeof userData.money);
 
   return (
     <div className="relative flex flex-col min-h-screen min-w-screen">
@@ -85,10 +66,10 @@ const DashboardPage = () => {
           >
             <span className="opacity-70">time</span>
 
-            <span className="font-mono">
-              {new Date(user.currentDate).toDateString()} →{" "}
-              {new Date(activeUser.currentDate).toDateString()}
-            </span>
+            <p>
+              {new Date(currentDate).toDateString()} →{" "}
+              {activeDate.toDateString()}
+            </p>
 
             <span className="text-amber-400">
               ({daysSimulated} day{daysSimulated === 1 ? "" : "s"})
@@ -102,7 +83,7 @@ const DashboardPage = () => {
             <div className="flex flex-row w-24 h-10 items-center justify-between px-3">
               <p className="text-xl">$</p>
               <p className="text-xl tabular-nums font-mono">
-                {activeUser.money}
+                {userData.money ?? "no value"}
               </p>
             </div>
           </WoodContainer>

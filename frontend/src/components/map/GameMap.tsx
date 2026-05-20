@@ -8,86 +8,80 @@ import FloorGrid from "./FloorGrid";
 import { useUser } from "../../context/UserContext";
 import { getPlayerSprite } from "../../utils/player";
 import { useGameState } from "../../context/GameStateContext";
+import type { User } from "../../api/api";
 
 const GameMap = () => {
-  const { user, updateLayers, updateInventory } = useUser();
+  const { user, saveMap } = useUser();
+  const userData = user!;
 
   const { mode, setMode } = useGameState();
 
-  const [tempLayers, setTempLayers] = useState(user.layers);
-  const [tempInventory, setTempInventory] = useState(user.inventory);
+  const [editLayers, setEditLayers] = useState<User["layers"] | null>(null);
+  const [editInventory, setEditInventory] = useState<User["inventory"] | null>(
+    null,
+  );
 
   useEffect(() => {
     if (mode === "decorate") {
-      setTempLayers(structuredClone(user.layers));
-      setTempInventory(structuredClone(user.inventory));
+      setEditLayers(structuredClone(userData.layers));
+      setEditInventory(structuredClone(userData.inventory));
     }
-  }, [mode, user.layers, user.inventory]);
+  }, [mode, userData.layers, userData.inventory]);
 
   useEffect(() => {
-    if (mode !== "decorate") return;
+    if (mode !== "decorate" || !editLayers || !editInventory) return;
 
     const handleKeyDown = async (e: KeyboardEvent) => {
       if (e.key === "Enter") {
-        await updateLayers(tempLayers);
-        await updateInventory(tempInventory);
-
+        await saveMap(editLayers, editInventory);
         setMode("play");
       }
 
       if (e.key === "Escape") {
-        setTempLayers(structuredClone(user.layers));
-        setTempInventory(structuredClone(user.inventory));
-
         setMode("play");
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
-
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [
-    mode,
-    tempLayers,
-    tempInventory,
-    user.layers,
-    user.inventory,
-    updateLayers,
-    updateInventory,
-    setMode,
-  ]);
+  }, [mode, editLayers, editInventory, saveMap, setMode]);
+
+  // FIX 3: Fall back directly to the real user data if edit state isn't active/populated yet
+  const currentLayers =
+    mode === "decorate" && editLayers ? editLayers : userData.layers;
+  const currentInventory =
+    mode === "decorate" && editInventory ? editInventory : userData.inventory;
 
   return (
     <ZoomableContainer>
       <div className="relative">
-        <FloorGrid
-          rows={tempLayers.layer0.length}
-          cols={tempLayers.layer0[0].length}
-          tileSize={50}
-        />
+        <FloorGrid rows={10} cols={10} tileSize={50} />
 
-        {mode === "decorate" ? (
+        {mode === "decorate" && editLayers && editInventory ? (
           <DecorateMap
-            layers={tempLayers}
-            onLayersChange={setTempLayers}
-            inventory={tempInventory}
-            onInventoryChange={setTempInventory}
+            layers={currentLayers}
+            onLayersChange={setEditLayers}
+            inventory={currentInventory}
+            onInventoryChange={setEditInventory}
             tileSize={50}
           />
         ) : (
-          <>
-            <GameGrid layers={user.layers} tiles={TILE_TYPES} tileSize={50} />
-
+          <div>
+            <GameGrid
+              layers={userData.layers}
+              tiles={TILE_TYPES}
+              tileSize={50}
+            />
             <Player
-              spritesheets={getPlayerSprite(user.sprite)}
-              collisionLayer={user.layers.layer1}
+              spritesheets={getPlayerSprite(userData.sprite)}
+              collisionLayer={userData.layers.layer1}
               tileSize={50}
               scale={3}
               slideMs={150}
             />
-          </>
+          </div>
         )}
       </div>
     </ZoomableContainer>

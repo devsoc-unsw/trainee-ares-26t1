@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/User";
 import process from "process";
 import dotenv from "dotenv";
+import { randomUUID } from "crypto";
 
 dotenv.config();
 
@@ -20,10 +21,10 @@ export const register = async (req: Request, res: Response) => {
 
     // Insert new user into db
     const user = await User.create({
-      id: crypto.randomUUID(),
+      id: randomUUID(),
       email: email,
       password: hashedPassword,
-      money: 100,
+      money: 1000,
       sprite: "orange",
     
       layer0: Array.from({ length: 10 }, () =>

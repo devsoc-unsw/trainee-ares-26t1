@@ -17,8 +17,8 @@ export function GameGrid({
   showGrid = false,
   highlightCollision = false,
 }: GameGridProps) {
-  const rows = layers.layer0.length;
-  const cols = layers.layer0[0].length;
+  const rows = layers?.layer0?.length || 0;
+  const cols = layers?.layer0?.[0]?.length || 0;
 
   return (
     <div className="inline-flex flex-col">

@@ -1,4 +1,4 @@
-import { get, post } from "./request";
+import { get, post, put } from "./request";
 
 type HelloResponse = {
   message: string;
@@ -22,7 +22,7 @@ type Task = {
   deadline?: Date; // for non daily tasks
 };
 
-type User = {
+export type User = {
   id: string;
   email: string;
   money: number;
@@ -34,7 +34,7 @@ type User = {
     layer2: (number | null)[][];
   };
 
-  inventory: Record<string, number>;
+  inventory: Record<number, number>;
 
   tasks: Task[];
 
@@ -74,19 +74,35 @@ export const authRegister = async (
     },
   );
 
-export const fetchUser = async (): Promise<User> =>
-  get<User>("/user/fetchUser", {
-    Authorization: `Bearer ${localStorage.getItem("token")}`,
-  });
+export const fetchUser = async (): Promise<User> => {
+  const res = await get<{ user: any }>("/user/fetchUser");
+  const raw = res.user;
+  return { ...raw, inventory: toInventoryRecord(raw.inventory) };
+};
 
-export const buyItem = async (id: number): Promise<Item> =>
-  post<Item>(
-    "/item/buy",
-    {
-      id,
-    },
-    {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-      "Content-Type": "application/json",
-    },
-  );
+export const updateUser = async (data: Partial<User>): Promise<User> => {
+  const payload = {
+    ...data,
+    ...(data.inventory && { inventory: toInventoryArray(data.inventory) }),
+  };
+  const res = await put<{ user: any }>("/user/update", payload);
+  return { ...res.user, inventory: toInventoryRecord(res.user.inventory) };
+};
+
+export const buyItem = async (id: number): Promise<User> => {
+  const res = await post<{ user: any }>("/item/buy", { id });
+  return { ...res.user, inventory: toInventoryRecord(res.user.inventory) };
+};
+
+const toInventoryRecord = (
+  inventory: { tileId: number; count: number }[],
+): Record<number, number> =>
+  Object.fromEntries(inventory.map(({ tileId, count }) => [tileId, count]));
+
+const toInventoryArray = (
+  inventory: Record<number, number>,
+): { tileId: number; count: number }[] =>
+  Object.entries(inventory).map(([tileId, count]) => ({
+    tileId: Number(tileId),
+    count,
+  }));

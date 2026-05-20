@@ -1,86 +1,97 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useState,
   type ReactNode,
 } from "react";
 
-import { DEFAULT_USER, type User } from "../types/UserTypes";
+import { TILE_TYPES } from "../types/MapTypes";
+import {
+  buyItem as apiBuyItem,
+  updateUser as apiUpdateUser,
+  fetchUser,
+  type User,
+} from "../api/api";
+
+import { useNavigate } from "react-router-dom";
 
 interface UserContextType {
-  user: User;
-
-  // UI should use this
-  activeUser: User;
-
-  setUser: React.Dispatch<React.SetStateAction<User>>;
+  loadUser: () => Promise<void>;
+  user: User | null;
+  activeUser: User | null;
+  setUser: React.Dispatch<React.SetStateAction<User | null>>;
 
   updateMoney: (amount: number) => void;
+  saveMap: (
+    layers: User["layers"],
+    inventory: User["inventory"],
+  ) => Promise<void>;
 
-  updateLayers: (layers: User["layers"]) => Promise<void>;
-  updateInventory: (inventory: User["inventory"]) => Promise<void>;
+  buyItem: (id: number) => Promise<void>;
 
   simulateDays: (days: number) => void;
   clearSimulation: () => void;
-
   simulated: boolean;
+  currentDate: string;
+  activeDate: Date;
+
+  isLoading: boolean;
 }
 
 const UserContext = createContext<UserContextType | null>(null);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  // REAL backend user
-  const [user, setUser] = useState<User>(DEFAULT_USER);
-
-  // TEMP simulated state
+  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
   const [simulatedUser, setSimulatedUser] = useState<User | null>(null);
+  const [simulatedCurrentDate, setSimulatedCurrentDate] = useState<Date | null>(
+    null,
+  );
+  const [currentDate, setCurrentDate] = useState<string>(
+    new Date().toISOString(),
+  );
 
-  // everything in UI should use this
   const activeUser = simulatedUser ?? user;
+  const activeDate = simulatedCurrentDate ?? new Date(currentDate);
 
-  // ─────────────────────────────────────────────
-  // MONEY
-  // ─────────────────────────────────────────────
-  const updateMoney = (amount: number) => {
-    setUser((prev) => ({
-      ...prev,
-      money: prev.money + amount,
-    }));
-  };
+  const navigate = useNavigate();
 
-  // ─────────────────────────────────────────────
-  // LAYERS
-  // ─────────────────────────────────────────────
-  const updateLayers = async (layers: User["layers"]) => {
-    setUser((prev) => ({
-      ...prev,
-      layers,
-    }));
+  const loadUser = async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
 
     try {
-      console.log("saving layers", layers);
-
-      // await apiSaveLayers(layers)
+      setIsLoading(true);
+      const data = await fetchUser();
+      setUser(data);
     } catch (err) {
-      console.error("failed to save layers", err);
+      console.error("Failed to load user", err);
+      localStorage.removeItem("token");
+      navigate("/login");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // ─────────────────────────────────────────────
-  // INVENTORY
-  // ─────────────────────────────────────────────
-  const updateInventory = async (inventory: User["inventory"]) => {
-    setUser((prev) => ({
-      ...prev,
-      inventory,
-    }));
+  useEffect(() => {
+    loadUser();
+  }, []);
+
+  const updateMoney = async (amount: number) => {
+    if (!user) return;
+    const newMoney = user.money + amount;
+
+    setUser((prev) => (prev ? { ...prev, money: newMoney } : null));
 
     try {
-      console.log("saving inventory", inventory);
-
-      // await apiSaveInventory(inventory)
+      await apiUpdateUser({ money: newMoney });
     } catch (err) {
-      console.error("failed to save inventory", err);
+      console.error("failed to save money", err);
     }
   };
 
@@ -88,97 +99,104 @@ export function UserProvider({ children }: { children: ReactNode }) {
   // SIMULATION
   // ─────────────────────────────────────────────
   const simulateDays = (days: number) => {
-    // continue simulating from already simulated state
-    const baseUser = simulatedUser ?? user;
+    const activeTarget = simulatedUser ?? user;
+    if (!activeTarget) return;
+
+    const baseUser = structuredClone(activeTarget);
+    const baseDate = new Date(simulatedCurrentDate ?? currentDate);
 
     let updatedUser = structuredClone(baseUser);
-
-    let current = new Date(updatedUser.currentDate);
+    let current = new Date(baseDate);
+    let money = updatedUser.money;
 
     for (let i = 0; i < days; i++) {
       current.setDate(current.getDate() + 1);
-
       let dailyPenalty = 0;
 
-      updatedUser.tasks = updatedUser.tasks.map((task) => {
-        // ─── DAILY ─────────────────────
-        if (task.type === "Daily") {
-          if (!task.completedToday) {
+      updatedUser.tasks.forEach((task) => {
+        switch (task.type) {
+          case "Daily":
             dailyPenalty += task.amount;
-          }
+            break;
 
-          return {
-            ...task,
-            completedToday: false,
-          };
+          case "Weekly":
+            if (task.dayOfWk === current.getDay()) dailyPenalty += task.amount;
+            break;
+
+          case "Custom":
+            if (task.deadline && current > new Date(task.deadline)) {
+              dailyPenalty += task.amount;
+            }
+            break;
         }
-
-        // ─── WEEKLY ────────────────────
-        if (task.type === "Weekly") {
-          const dueToday = task.dayOfWk === current.getDay();
-
-          if (dueToday && !task.completedToday) {
-            dailyPenalty += task.amount;
-          }
-
-          return {
-            ...task,
-            completedToday: false,
-          };
-        }
-
-        // ─── CUSTOM ────────────────────
-        if (task.type === "Custom" && task.deadline) {
-          const deadline = new Date(task.deadline);
-
-          // every day overdue = penalty
-          const overdue = current > deadline;
-
-          if (overdue && !task.completedToday) {
-            dailyPenalty += task.amount;
-          }
-
-          return task;
-        }
-
-        return task;
       });
 
-      updatedUser.money -= dailyPenalty;
+      money -= dailyPenalty;
     }
 
-    updatedUser.currentDate = current.toISOString();
+    updatedUser.money = money;
 
-    console.log("simulated user", updatedUser);
-
-    // IMPORTANT:
-    // only updates temporary simulation state
     setSimulatedUser(updatedUser);
+    setSimulatedCurrentDate(current);
   };
-
-  // ─────────────────────────────────────────────
-  // CLEAR SIMULATION
-  // ─────────────────────────────────────────────
 
   const clearSimulation = () => {
     setSimulatedUser(null);
+    setSimulatedCurrentDate(null);
+  };
+
+  const buyItem = async (id: number) => {
+    const tile = TILE_TYPES[id];
+    if (!tile) return;
+
+    const baseUser = simulatedUser ?? user;
+    if (!baseUser || baseUser.money < tile.price) {
+      console.warn("Not enough money or user not loaded");
+      return;
+    }
+
+    try {
+      const updatedUser = await apiBuyItem(id);
+      setUser(updatedUser);
+    } catch (err) {
+      console.error("buyItem failed", err);
+    }
+  };
+
+  const saveMap = async (
+    layers: User["layers"],
+    inventory: User["inventory"],
+  ) => {
+    if (!user) return;
+    setUser((prev) => (prev ? { ...prev, layers, inventory } : null));
+
+    try {
+      await apiUpdateUser({ layers, inventory });
+    } catch (err) {
+      console.error("failed to save map", err);
+    }
   };
 
   return (
     <UserContext.Provider
       value={{
+        loadUser,
         user,
         activeUser,
         setUser,
 
         updateMoney,
-        updateLayers,
-        updateInventory,
+        buyItem,
 
         simulateDays,
         clearSimulation,
 
         simulated: simulatedUser != null,
+
+        currentDate,
+        activeDate,
+        isLoading,
+        saveMap,
       }}
     >
       {children}

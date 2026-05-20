@@ -11,6 +11,30 @@ export const getUser = async (req: any, res: Response) => {
   }
 };
 
+export const updateUser = async (req: any, res: Response) => {
+  try {
+    const user = req.user;
+    const { layers, inventory, money, sprite, tasks, debtStartDate } = req.body;
+
+    if (layers) {
+      if (!checkLayers(layers)) {
+        return res.status(400).json({ message: "Invalid layers provided" });
+      }
+      user.layers = layers;
+    }
+    if (inventory !== undefined) user.inventory = inventory;
+    if (money !== undefined) user.money = money;
+    if (sprite !== undefined) user.sprite = sprite;
+    if (tasks !== undefined) user.tasks = tasks;
+    if (debtStartDate !== undefined) user.debtStartDate = debtStartDate;
+
+    await user.save();
+    return res.status(200).json({ user });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 // Resets user to default state
 export const resetUser = async (req: any, res: Response) => {
   try {

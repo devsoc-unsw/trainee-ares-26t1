@@ -29,8 +29,8 @@ function pickResults(): [string, string, string] {
 }
 
 export default function GamblingMenu() {
-  const { activeUser, updateMoney } = useUser();
-  const money = activeUser.money;
+  const { user, updateMoney } = useUser();
+  const money = user!.money;
 
   const [bet, setBet] = useState(10);
   const [spinning, setSpinning] = useState(false);

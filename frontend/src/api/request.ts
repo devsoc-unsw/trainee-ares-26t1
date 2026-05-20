@@ -10,31 +10,26 @@ const authHeader = (): Record<string, string> => {
 };
 
 // general request handler
-const request = async <T>(
+export const request = async <T>(
   path: string,
-  options: RequestInit = {},
+  options: RequestInit,
 ): Promise<T> => {
-  const response = await fetch(API_URL + path, {
+  const res = await fetch(`${API_URL}${path}`, {
+    ...options,
     headers: {
       ...authHeader(),
       ...(options.headers || {}),
     },
-    ...options,
   });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-
-    throw new Error(
-      `HTTP ${response.status}: ${errorText || response.statusText}`,
-    );
+  if (!res.ok) {
+    const error = await res.text();
+    throw new Error(error || "Request failed");
   }
 
-  if (response.status === 204) {
-    return null as T;
-  }
+  if (res.status === 204) return null as T;
 
-  return response.json();
+  return res.json();
 };
 
 ///////////////////////////////////////////////////////////////////////////////

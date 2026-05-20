@@ -17,13 +17,13 @@ import SettingsMenu from "./SettingsMenu";
 import MenuHeader from "./MenuHeader";
 
 // menus
-import ShopMenu from "./ShopMenu";
 import AddTaskMenu from "./AddTaskMenu";
 import ViewTaskMenu from "./ViewTaskMenu";
 import { useNavigate } from "react-router-dom";
 import { useGameState } from "../../context/GameStateContext";
 import { useUser } from "../../context/UserContext";
 import GamblingMenu from "./GamblingMenu";
+import { ShopMenu } from "./ShopMenu";
 
 type MenuView =
   | "main"
@@ -96,7 +96,7 @@ export function BaseMenu() {
     ),
 
     settings: <SettingsMenu onBack={() => setMenuContent("main")} />,
-    shop: <ShopMenu onBack={() => setMenuContent("main")} />,
+    shop: <ShopMenu />,
     addTask: <AddTaskMenu onBack={() => setMenuContent("main")} />,
     viewTask: <ViewTaskMenu onBack={() => setMenuContent("main")} />,
     gambling: <GamblingMenu />,

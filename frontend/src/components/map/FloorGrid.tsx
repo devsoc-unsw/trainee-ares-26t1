@@ -48,7 +48,7 @@ const FloorGrid = ({ rows, cols, tileSize }: FloorGridProps) => {
   };
 
   return (
-    <div className="absolute -top-[75px] -left-[25px] inline-flex flex-col z-0 bg-theme-brown rounded-xl">
+    <div className="absolute -top-[75px] -left-[25px] inline-flex flex-col z-0">
       {Array.from({ length: rows }, (_, row) => (
         <div key={row} className="flex leading-none">
           {Array.from({ length: cols }, (_, col) => (

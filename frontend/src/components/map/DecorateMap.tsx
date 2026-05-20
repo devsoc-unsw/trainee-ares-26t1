@@ -1,18 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import {
-  TILE_TYPES,
-  type InventoryItem,
-  type MapLayers,
-  type TileId,
-} from "../../types/MapTypes";
+import { TILE_TYPES, type MapLayers, type TileId } from "../../types/MapTypes";
 import InventorySidebar from "./Inventory";
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 export interface DecorateModeProps {
   layers: MapLayers;
   onLayersChange: (layers: MapLayers) => void;
-  inventory: InventoryItem[];
-  onInventoryChange: (inventory: InventoryItem[]) => void;
+  inventory: Record<number, number>;
+  onInventoryChange: (inventory: Record<number, number>) => void;
   tileSize?: number;
 }
 
@@ -124,13 +119,10 @@ export function DecorateMap({
             const next = cloneLayers(layers);
             getLayer(next, layerN)[row][col] = null;
             onLayersChange(next);
-            onInventoryChange(
-              inventory.some((i) => i.tileId === tileId)
-                ? inventory.map((i) =>
-                    i.tileId === tileId ? { ...i, count: i.count + 1 } : i,
-                  )
-                : [...inventory, { tileId, count: 1 }],
-            );
+            onInventoryChange({
+              ...inventory,
+              [tileId]: (inventory[tileId] ?? 0) + 1,
+            });
             return;
           }
         }
@@ -150,23 +142,23 @@ export function DecorateMap({
         return;
       }
 
-      // place item from inventory
-      if (selectedInventoryId != null) {
+      // Place item from inventory
+      if (selectedInventoryId != null && inventory[selectedInventoryId] > 0) {
         const tile = TILE_TYPES[selectedInventoryId];
-        if (!tile) return;
-        if (!canPlace(row, col)) return;
-        const nextInv = inventory.map((i) =>
-          i.tileId === selectedInventoryId ? { ...i, count: i.count - 1 } : i,
-        );
+        if (!tile || !canPlace(row, col)) return;
+
+        const nextInv = { ...inventory };
+        nextInv[selectedInventoryId] -= 1;
+        if (nextInv[selectedInventoryId] <= 0)
+          delete nextInv[selectedInventoryId];
         onInventoryChange(nextInv);
-        // Place on map
+
         const next = cloneLayers(layers);
         getLayer(next, tile.layer)[row][col] = selectedInventoryId;
         onLayersChange(next);
-        // If count hits 0, deselect
-        const remaining =
-          nextInv.find((i) => i.tileId === selectedInventoryId)?.count ?? 0;
-        if (remaining <= 0) setSelectedInventoryId(null);
+
+        // Deselect if used up
+        if (!nextInv[selectedInventoryId]) setSelectedInventoryId(null);
         return;
       }
 
@@ -197,24 +189,23 @@ export function DecorateMap({
   // ── Inventory sidebar selection ──────────────────────────────────────────
   const handleInventorySelect = useCallback(
     (tileId: number) => {
-      // Drop any cursor item back to inventory first
       if (cursor) {
+        // Return cursor item to map or inventory
         if (cursor.fromMap) {
-          // Restore to original position
           const next = cloneLayers(layers);
           getLayer(next, cursor.fromMap.layer)[cursor.fromMap.row][
             cursor.fromMap.col
           ] = cursor.tileId;
           onLayersChange(next);
         } else {
-          onInventoryChange(
-            inventory.map((i) =>
-              i.tileId === cursor.tileId ? { ...i, count: i.count + 1 } : i,
-            ),
-          );
+          onInventoryChange({
+            ...inventory,
+            [cursor.tileId]: (inventory[cursor.tileId] ?? 0) + 1,
+          });
         }
         setCursor(null);
       }
+
       setSelectedInventoryId((prev) => (prev === tileId ? null : tileId));
     },
     [cursor, layers, inventory, onLayersChange, onInventoryChange],
@@ -223,13 +214,10 @@ export function DecorateMap({
   // ── Return a tileId to inventory (adds to existing stack or creates new) ──
   const returnToInventory = useCallback(
     (tileId: number) => {
-      onInventoryChange(
-        inventory.some((i) => i.tileId === tileId)
-          ? inventory.map((i) =>
-              i.tileId === tileId ? { ...i, count: i.count + 1 } : i,
-            )
-          : [...inventory, { tileId, count: 1 }],
-      );
+      onInventoryChange({
+        ...inventory,
+        [tileId]: (inventory[tileId] ?? 0) + 1,
+      });
     },
     [inventory, onInventoryChange],
   );

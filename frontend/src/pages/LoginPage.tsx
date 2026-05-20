@@ -6,7 +6,6 @@ import { authLogin } from "../api/api";
 const LoginPage = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-
   const navigate = useNavigate();
   const handleLogin = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -60,7 +59,10 @@ const LoginPage = () => {
               Login
             </button>
             <h3 className="text-center">Or</h3>
-            <Link to="/register" className="underline hover:decoration-sky-500 text-center">
+            <Link
+              to="/register"
+              className="underline hover:decoration-sky-500 text-center"
+            >
               Create Account
             </Link>
           </div>

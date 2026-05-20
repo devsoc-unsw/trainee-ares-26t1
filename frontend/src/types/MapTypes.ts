@@ -14,11 +14,6 @@ export interface MapLayers {
   layer2: TileId[][]; // decorative overlay (no collision)
 }
 
-export interface InventoryItem {
-  tileId: number;
-  count: number;
-}
-
 export const TILE_TYPES: Record<number, MapTile> = {
   // Layer 0 ///////////////////////////////////////
   1: {

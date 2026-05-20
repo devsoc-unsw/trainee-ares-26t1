@@ -1,7 +1,7 @@
-import { TILE_TYPES, type InventoryItem } from "../../types/MapTypes";
+import { TILE_TYPES } from "../../types/MapTypes";
 
 interface SidebarProps {
-  inventory: InventoryItem[];
+  inventory: Record<number, number>;
   selectedTileId: number | null;
   onSelect: (tileId: number) => void;
 }
@@ -11,6 +11,10 @@ function InventorySidebar({
   selectedTileId,
   onSelect,
 }: SidebarProps) {
+  const entries = Object.entries(inventory)
+    .map(([key, count]) => ({ tileId: Number(key), count }))
+    .filter(({ count }) => count > 0);
+
   return (
     <div className="w-48 shrink-0 bg-theme-brown-dark flex flex-col rounded-r-xl border-theme-brown border-t-5 border-b-5 border-r-5">
       <div className="px-3 py-2 border-b border-amber-800">
@@ -18,13 +22,13 @@ function InventorySidebar({
           Inventory
         </p>
       </div>
-      <div className="flex-1 overflow-y-auto p-2 flex flex-col gap-1">
-        {inventory.length === 0 && (
+      <div className="flex-1 max-h-[50vh] overflow-y-scroll p-2 flex flex-col gap-1 scrollbar-thin">
+        {entries.length === 0 && (
           <p className="text-amber-600 text-xs text-center mt-4">No items</p>
         )}
-        {inventory.map(({ tileId, count }) => {
+        {entries.map(({ tileId, count }) => {
           const tile = TILE_TYPES[tileId];
-          if (!tile || count <= 0) return null;
+          if (!tile) return null;
           const selected = selectedTileId === tileId;
           return (
             <button

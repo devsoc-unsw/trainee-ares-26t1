@@ -28,7 +28,6 @@ export default function FormButton({ text, onClick }: FormButtonProps) {
       >
         <p className="text-md text-center mt-1 text-theme-white">{text}</p>
       </button>
-
     </div>
   );
 }

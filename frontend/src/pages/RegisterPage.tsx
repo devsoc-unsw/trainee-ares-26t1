@@ -16,9 +16,7 @@ const RegisterPage = () => {
     e.preventDefault();
     try {
       await authRegister(email, password);
-
-      // Assuming that register does not log the user in
-      navigate("/login");
+      navigate("/dashboard");
     } catch (err) {
       console.log(err);
     }
@@ -63,7 +61,10 @@ const RegisterPage = () => {
               Register
             </button>
             <h3 className="text-center">Or</h3>
-            <Link to="/login" className="underline hover:decoration-sky-500 text-center">
+            <Link
+              to="/login"
+              className="underline hover:decoration-sky-500 text-center"
+            >
               Login to Account
             </Link>
           </div>

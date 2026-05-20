@@ -24,7 +24,13 @@ const LoginPage = () => {
   return (
     <div className="flex flex-col items-center justify-center h-screen w-[85vw] md:w-screen">
       <WoodContainer>
-        <form className="flex flex-col p-5 w-[70vw] h-[30vh] md:w-[30vw] md:h-[50vh] items-center justify-center gap-5 md:gap-10">
+        <form className="flex flex-col p-5 w-[70vw] h-[50vh] md:w-[30vw] md:h-[65vh] items-center justify-center gap-5 md:gap-10">
+          <div className="flex flex-col justify-center gap-2">
+            <h1 className="text-theme-black gap-10 text-center text-2xl md:text-5xl">
+              Meowmentum :3
+            </h1>
+            <h2 className="text-center">Login to Account</h2>
+          </div>
           <div>
             <label>Email:</label>
             <input
@@ -45,7 +51,7 @@ const LoginPage = () => {
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <div className="flex justify-center pt-3">
+          <div className="flex flex-col justify-center pt-3 gap-5">
             <button
               type="submit"
               className="flex justify-center border-2 rounded-xl w-[20vw] md:w-[10vw]"
@@ -53,12 +59,13 @@ const LoginPage = () => {
             >
               Login
             </button>
+            <h3 className="text-center">Or</h3>
+            <Link to="/register" className="underline hover:decoration-sky-500 text-center">
+              Create Account
+            </Link>
           </div>
         </form>
       </WoodContainer>
-      <Link to="/register" className="mt-5 underline hover:decoration-sky-500">
-        Create Account
-      </Link>
     </div>
   );
 };

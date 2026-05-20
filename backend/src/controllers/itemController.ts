@@ -38,7 +38,7 @@ export const buyItem = async (req: any, res: Response) => {
 
     // Save user
     await user.save();
-    return res.status(201).json({ inventory: user.inventory, money: user.money });
+    return res.status(201).json({ user });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "Server error" });

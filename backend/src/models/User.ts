@@ -5,6 +5,7 @@ import mongoose, { Schema, Document } from "mongoose";
 type Layer = (number | null)[][];
 
 interface UserDoc extends Document {
+  id: string;
   email: string;
   password: string;
   money: number;
@@ -71,6 +72,7 @@ const createGrid = () =>
 
 const UserSchema = new Schema<UserDoc>(
   {
+    id: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
 
     password: { type: String, required: true },

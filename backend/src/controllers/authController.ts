@@ -20,6 +20,7 @@ export const register = async (req: Request, res: Response) => {
 
     // Insert new user into db
     const user = await User.create({
+      id: crypto.randomUUID(),
       email: email,
       password: hashedPassword,
       money: 100,

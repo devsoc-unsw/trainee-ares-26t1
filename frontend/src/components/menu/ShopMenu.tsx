@@ -11,7 +11,7 @@ export const ShopMenu = ({ onBack }: ShopMenuProps) => {
   const { setUser } = useUser();
   const handleBuyItem = async (id: number) => {
     try {
-      const res = await buyItem(id) as any;
+      const res = (await buyItem(id)) as any;
       setUser(res.user);
     } catch (err) {
       console.log(err);
@@ -19,7 +19,7 @@ export const ShopMenu = ({ onBack }: ShopMenuProps) => {
   };
 
   return (
-    <div className="grid grid-cols-3 gap-5 items-start justify-items-center overflow-y-auto">
+    <div className="grid grid-cols-3 gap-2 items-start justify-items-center overflow-y-auto">
       {Object.values(TILE_TYPES).map((tile) => (
         <ItemButton
           key={tile.id}

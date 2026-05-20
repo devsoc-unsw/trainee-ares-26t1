@@ -9,6 +9,7 @@ import {
   LogOut,
   ArrowLeft,
   SunMoon,
+  Coins,
 } from "lucide-react";
 
 import MenuButton from "./MenuButton";
@@ -22,8 +23,15 @@ import ViewTaskMenu from "./ViewTaskMenu";
 import { useNavigate } from "react-router-dom";
 import { useGameState } from "../../context/GameStateContext";
 import { useUser } from "../../context/UserContext";
+import GamblingMenu from "./GamblingMenu";
 
-type MenuView = "main" | "settings" | "shop" | "addTask" | "viewTask";
+type MenuView =
+  | "main"
+  | "settings"
+  | "shop"
+  | "addTask"
+  | "viewTask"
+  | "gambling";
 
 export function BaseMenu() {
   const [menuContent, setMenuContent] = useState<MenuView>("main");
@@ -36,6 +44,7 @@ export function BaseMenu() {
     shop: "Shop",
     addTask: "Add Task",
     viewTask: "View Tasks",
+    gambling: '"Investing"',
   };
 
   const navigate = useNavigate();
@@ -77,6 +86,11 @@ export function BaseMenu() {
           Icon={SunMoon}
           onClick={() => simulateDays(1)}
         />
+        <MenuButton
+          text="Gamble"
+          Icon={Coins}
+          onClick={() => setMenuContent("gambling")}
+        />
         <MenuButton text="Log out" Icon={LogOut} onClick={handleLogout} />
       </div>
     ),
@@ -85,6 +99,7 @@ export function BaseMenu() {
     shop: <ShopMenu onBack={() => setMenuContent("main")} />,
     addTask: <AddTaskMenu onBack={() => setMenuContent("main")} />,
     viewTask: <ViewTaskMenu onBack={() => setMenuContent("main")} />,
+    gambling: <GamblingMenu />,
   };
 
   return (

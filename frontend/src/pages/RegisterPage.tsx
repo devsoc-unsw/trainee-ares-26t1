@@ -1,13 +1,21 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import WoodContainer from "../components/WoodContainer";
 import { authRegister } from "../api/api";
+import { useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
-  const [registerRes, setRegisterRes] = useState("");
-  const handleRegiser = async () => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+
+  const navigate = useNavigate();
+
+  const handleRegister = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
     try {
-      const data = await authRegister();
-      setRegisterRes(data.message);
+      await authRegister(email, password);
+      
+      // Assuming that register does not log the user in
+      navigate("/login");
     } catch (err) {
       console.log(err);
     }
@@ -24,6 +32,7 @@ const RegisterPage = () => {
               type="string"
               required
               className="flex border-1 rounded-md"
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div>
@@ -33,15 +42,16 @@ const RegisterPage = () => {
               type="password"
               required
               className="flex border-1 rounded-md"
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <div className="flex justify-center pt-3">
             <button
               type="submit"
               className="flex justify-center border-2 rounded-xl w-[20vw] md:w-[10vw]"
-              onClick={handleRegiser}
+              onClick={(e) => handleRegister(e)}
             >
-              Login
+              Register
             </button>
           </div>
         </form>

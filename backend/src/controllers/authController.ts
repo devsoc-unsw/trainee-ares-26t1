@@ -23,7 +23,7 @@ export const register = async (req: Request, res: Response) => {
       email: email,
       password: hashedPassword,
       money: 0,
-      sprite: "Black",
+      sprite: "orange",
     
       layer0: Array.from({ length: 10 }, () =>
         Array.from({ length: 10 }, () => null)
@@ -37,7 +37,7 @@ export const register = async (req: Request, res: Response) => {
         Array.from({ length: 10 }, () => null)
       ),
     
-      inventory: {},
+      inventory: [],
       tasks: [],
       debtStartDate: null
     });

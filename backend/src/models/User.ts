@@ -1,140 +1,114 @@
-import mongoose, { Schema } from "mongoose";
-import { IEntity } from "./Entity";
-import TaskSchema, { ITask } from "./Task";
+import mongoose, { Schema, Document } from "mongoose";
 
-export interface IUser extends Document {
+/* ---------------- TYPES ---------------- */
+
+type Layer = (number | null)[][];
+
+interface UserDoc extends Document {
   email: string;
-
   password: string;
-
   money: number;
-
   sprite: string;
 
   layers: {
-    layer0: (IEntity | null)[][];
-    layer1: (IEntity | null)[][];
-    layer2: (IEntity | null)[][];
-  }
-
-  inventory: Map<string, number>;
-
-  tasks: ITask[];
-
-  debtStartDate: Date | null;
-
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-const UserSchema = new Schema<IUser>({
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true,
-    trim: true,
-  },
-
-  password: {
-    type: String,
-    required: true,
-  },
-
-  money: {
-    type: Number,
-    required: true,
-    default: 0
-  },
-
-  sprite: {
-    type: String,
-    required: true
-  },
-
-  /* =========================
-     GAME BOARD LAYERS
-  ========================= */
-  layers: {
-    layer0: {
-      type: [[Schema.Types.Mixed]],
-      required: true,
-  
-      // validate: {
-      //   validator: function (board: IEntity[][]) {
-      //     return Array.isArray(board) &&
-      //     board.length === 10 &&
-      //     board.every(row => Array.isArray(row) && row.length === 10);
-      //   },
-      //   message: 'layer0 must contain 10 rows'
-      // }
-    },
-  
-    layer1: {
-      type: [[Schema.Types.Mixed]],
-      required: true,
-  
-      // validate: {
-      //   validator: function (board: IEntity[][]) {
-      //     return Array.isArray(board) &&
-      //     board.length === 10 &&
-      //     board.every(row => Array.isArray(row) && row.length === 10);
-      //   },
-      //   message: 'layer1 must contain 10 rows'
-      // }
-    },
-  
-    layer2: {
-      type: [[Schema.Types.Mixed]],
-      required: true,
-  
-      // validate: {
-      //   validator: function (board: IEntity[][]) {
-      //     return Array.isArray(board) &&
-      //     board.length === 10 &&
-      //     board.every(row => Array.isArray(row) && row.length === 10);
-      //   },
-      //   message: 'layer2 must contain 10 rows'
-      // }
-    },
-  },
-
-  /* =========================
-     INVENTORY
-  ========================= */
+    layer0: Layer;
+    layer1: Layer;
+    layer2: Layer;
+  };
 
   inventory: {
-    type: Map,
-
-    of: {
-      type: Number,
-      min: 0
-    },
-
-    default: {}
-  },
-
-  /* =========================
-     TASKS
-  ========================= */
+    tileId: number;
+    count: number;
+  }[];
 
   tasks: {
-    type: [TaskSchema],
-    required: true,
-    default: []
+    id: string;
+    type: "Daily" | "Weekly" | "Custom";
+    name: string;
+    amount: number;
+    difficulty?: string;
+    dayOfWk?: number;
+    deadline?: string;
+  }[];
+
+  debtStartDate: Date | null;
+}
+
+/* ---------------- SCHEMAS ---------------- */
+
+// Inventory item
+const InventorySchema = new Schema(
+  {
+    tileId: { type: Number, required: true },
+    count: { type: Number, required: true },
   },
+  { _id: false }
+);
 
-  /* =========================
-     DEBT
-  ========================= */
+// Task
+const TaskSchema = new Schema(
+  {
+    id: { type: String, required: true },
+    type: { type: String, required: true },
+    name: { type: String, required: true },
+    amount: { type: Number, required: true },
+    difficulty: { type: String },
+    dayOfWk: { type: Number },
+    deadline: { type: String },
+  },
+  { _id: false }
+);
 
-  debtStartDate: {
-    type: Date,
-    default: null
-  }
+// Helper: 10x10 grid generator
+const createGrid = () =>
+  Array.from({ length: 10 }, () =>
+    Array.from({ length: 10 }, () => null)
+  );
 
-}, {
-  timestamps: true
-});
+/* ---------------- USER SCHEMA ---------------- */
 
-export const User = mongoose.model("User", UserSchema);
+const UserSchema = new Schema<UserDoc>(
+  {
+    email: { type: String, required: true, unique: true },
+
+    password: { type: String, required: true },
+
+    money: { type: Number, default: 0 },
+
+    sprite: { type: String, default: "orange" },
+
+    /* ---------------- LAYERS ---------------- */
+    layers: {
+      layer0: {
+        type: [[Schema.Types.Mixed]],
+        default: createGrid,
+      },
+      layer1: {
+        type: [[Schema.Types.Mixed]],
+        default: createGrid,
+      },
+      layer2: {
+        type: [[Schema.Types.Mixed]],
+        default: createGrid,
+      },
+    },
+
+    inventory: {
+      type: [InventorySchema],
+      default: [],
+    },
+
+    tasks: {
+      type: [TaskSchema],
+      default: [],
+    },
+
+    debtStartDate: {
+      type: Date,
+      default: null,
+    },
+  },
+  { timestamps: true }
+);
+
+export const User = mongoose.model<UserDoc>("User", UserSchema);

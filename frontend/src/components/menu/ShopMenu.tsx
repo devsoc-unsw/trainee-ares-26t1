@@ -1,15 +1,18 @@
 import ItemButton from "./ItemButton";
 import { TILE_TYPES } from "../../types/MapTypes";
 import { buyItem } from "../../api/api";
+import { useUser } from "../../context/UserContext";
 
 interface ShopMenuProps {
   onBack: () => void;
 }
 
 export const ShopMenu = ({ onBack }: ShopMenuProps) => {
+  const { setUser } = useUser();
   const handleBuyItem = async (id: number) => {
     try {
-      await buyItem(id);
+      const res = await buyItem(id) as any;
+      setUser(res.user);
     } catch (err) {
       console.log(err);
     }

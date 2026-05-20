@@ -144,7 +144,7 @@ export const TILE_TYPES: Record<number, MapTile> = {
   },
 
   23: {
-    id: 20,
+    id: 23,
     name: "Croissant",
     layer: 2,
     sprite: "/tiles/lv2/croissant.png",

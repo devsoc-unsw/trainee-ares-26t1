@@ -8,6 +8,7 @@ import {
   Calendar,
   LogOut,
   ArrowLeft,
+  SunMoon,
 } from "lucide-react";
 
 import MenuButton from "./MenuButton";
@@ -20,12 +21,14 @@ import AddTaskMenu from "./AddTaskMenu";
 import ViewTaskMenu from "./ViewTaskMenu";
 import { useNavigate } from "react-router-dom";
 import { useGameState } from "../../context/GameStateContext";
+import { useUser } from "../../context/UserContext";
 
 type MenuView = "main" | "settings" | "shop" | "addTask" | "viewTask";
 
 export function BaseMenu() {
   const [menuContent, setMenuContent] = useState<MenuView>("main");
   const { enterDecorateMode } = useGameState();
+  const { simulateDays } = useUser();
 
   const menuTitles: Record<MenuView, string> = {
     main: "Menu",
@@ -68,6 +71,11 @@ export function BaseMenu() {
           text="View Tasks"
           Icon={Calendar}
           onClick={() => setMenuContent("viewTask")}
+        />
+        <MenuButton
+          text="Next day"
+          Icon={SunMoon}
+          onClick={() => simulateDays(1)}
         />
         <MenuButton text="Log out" Icon={LogOut} onClick={handleLogout} />
       </div>

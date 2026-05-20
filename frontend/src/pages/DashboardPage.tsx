@@ -5,13 +5,16 @@ import GameMap from "../components/map/GameMap";
 import KeyHint from "../components/KeyHint";
 import { useUser } from "../context/UserContext";
 import { useGameState } from "../context/GameStateContext";
+import { getDayDiff } from "../utils/player";
 
 const DashboardPage = () => {
   const { menuOpen, setMenuOpen, toggleMenu, mode } = useGameState();
 
-  const { user } = useUser();
+  const { activeUser, user } = useUser();
 
-  console.log("user:", user);
+  const daysSimulated = getDayDiff(user.currentDate, activeUser.currentDate);
+
+  console.log("user:", activeUser);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -56,12 +59,35 @@ const DashboardPage = () => {
           )}
         </div>
 
+        {/* SIMULATED DAYS */}
+        <div className="absolute top-5 left-1/2 -translate-x-1/2 z-50">
+          <div
+            className="flex flex-col items-center text-sm text-amber-200"
+            style={{
+              textShadow: "2px 2px 4px rgba(0,0,0,0.8)",
+            }}
+          >
+            <span className="opacity-70">time</span>
+
+            <span className="font-mono">
+              {new Date(user.currentDate).toDateString()} →{" "}
+              {new Date(activeUser.currentDate).toDateString()}
+            </span>
+
+            <span className="text-amber-400">
+              ({daysSimulated} day{daysSimulated === 1 ? "" : "s"})
+            </span>
+          </div>
+        </div>
+
         {/* MONEY */}
         <div className="absolute top-5 right-10 md:right-20">
           <WoodContainer>
             <div className="flex flex-row w-24 h-10 items-center justify-between px-3">
               <p className="text-xl">$</p>
-              <p className="text-xl tabular-nums font-mono">{user.money}</p>
+              <p className="text-xl tabular-nums font-mono">
+                {activeUser.money}
+              </p>
             </div>
           </WoodContainer>
         </div>

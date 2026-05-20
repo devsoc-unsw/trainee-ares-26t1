@@ -1,5 +1,3 @@
-// UserContext.tsx
-
 import {
   createContext,
   useContext,
@@ -7,74 +5,51 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import type { User } from "../types/UserTypes";
-import { DUMMY_LAYERS } from "../types/MapTypes";
+
+import { DEFAULT_USER, type User } from "../types/UserTypes";
 import { fetchUser } from "../api/api";
 
 interface UserContextType {
   user: User;
+
+  // UI should use this
+  activeUser: User;
+
   setUser: React.Dispatch<React.SetStateAction<User>>;
 
   updateMoney: (amount: number) => void;
 
   updateLayers: (layers: User["layers"]) => Promise<void>;
   updateInventory: (inventory: User["inventory"]) => Promise<void>;
+
+  simulateDays: (days: number) => void;
+  clearSimulation: () => void;
+
+  simulated: boolean;
 }
-
-const defaultUser: User = {
-  id: "u1",
-  email: "alex@example.com",
-  money: 500,
-  sprite: "orange",
-
-  layers: DUMMY_LAYERS,
-
-  inventory: [
-    { tileId: 1, count: 2 },
-    { tileId: 10, count: 1 },
-    { tileId: 12, count: 3 },
-    { tileId: 14, count: 1 },
-  ],
-
-  tasks: [
-    {
-      id: "t1",
-      type: "Daily",
-      name: "Feed cat",
-      amount: 5,
-    },
-    {
-      id: "t2",
-      type: "Weekly",
-      name: "Clean room",
-      amount: 25,
-      dayOfWk: 1,
-      deadline: "2026-05-24T13:29:43.871Z",
-    },
-    {
-      id: "t3",
-      type: "Custom",
-      name: "Finish project",
-      amount: 40,
-      difficulty: "Hard",
-      deadline: "2026-05-25T10:00:00.000Z",
-    },
-  ],
-
-  debtStartDate: null,
-};
 
 const UserContext = createContext<UserContextType | null>(null);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User>(defaultUser);
+  // REAL backend user
+  const [user, setUser] = useState<User>(DEFAULT_USER);
 
-  // Fetches user from db
+  // TEMP simulated state
+  const [simulatedUser, setSimulatedUser] = useState<User | null>(null);
+
+  // everything in UI should use this
+  const activeUser = simulatedUser ?? user;
+
+  // ─────────────────────────────────────────────
+  // FETCH USER
+  // ─────────────────────────────────────────────
   useEffect(() => {
     const loadUser = async () => {
       try {
         const data = (await fetchUser()) as any;
+
         console.log("fetching user", data);
+
         setUser(data.user);
       } catch (err) {
         console.error("Failed to fetch user", err);
@@ -84,6 +59,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
     loadUser();
   }, []);
 
+  // ─────────────────────────────────────────────
+  // MONEY
+  // ─────────────────────────────────────────────
   const updateMoney = (amount: number) => {
     setUser((prev) => ({
       ...prev,
@@ -91,6 +69,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }));
   };
 
+  // ─────────────────────────────────────────────
+  // LAYERS
+  // ─────────────────────────────────────────────
   const updateLayers = async (layers: User["layers"]) => {
     setUser((prev) => ({
       ...prev,
@@ -98,13 +79,17 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }));
 
     try {
-      // await apiSaveLayers(layers);
       console.log("saving layers", layers);
+
+      // await apiSaveLayers(layers)
     } catch (err) {
       console.error("failed to save layers", err);
     }
   };
 
+  // ─────────────────────────────────────────────
+  // INVENTORY
+  // ─────────────────────────────────────────────
   const updateInventory = async (inventory: User["inventory"]) => {
     setUser((prev) => ({
       ...prev,
@@ -112,16 +97,110 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }));
 
     try {
-      // await apiSaveInventory(inventory);
       console.log("saving inventory", inventory);
+
+      // await apiSaveInventory(inventory)
     } catch (err) {
       console.error("failed to save inventory", err);
     }
   };
 
+  // ─────────────────────────────────────────────
+  // SIMULATION
+  // ─────────────────────────────────────────────
+  const simulateDays = (days: number) => {
+    // continue simulating from already simulated state
+    const baseUser = simulatedUser ?? user;
+
+    let updatedUser = structuredClone(baseUser);
+
+    let current = new Date(updatedUser.currentDate);
+
+    for (let i = 0; i < days; i++) {
+      current.setDate(current.getDate() + 1);
+
+      let dailyPenalty = 0;
+
+      updatedUser.tasks = updatedUser.tasks.map((task) => {
+        // ─── DAILY ─────────────────────
+        if (task.type === "Daily") {
+          if (!task.completedToday) {
+            dailyPenalty += task.amount;
+          }
+
+          return {
+            ...task,
+            completedToday: false,
+          };
+        }
+
+        // ─── WEEKLY ────────────────────
+        if (task.type === "Weekly") {
+          const dueToday = task.dayOfWk === current.getDay();
+
+          if (dueToday && !task.completedToday) {
+            dailyPenalty += task.amount;
+          }
+
+          return {
+            ...task,
+            completedToday: false,
+          };
+        }
+
+        // ─── CUSTOM ────────────────────
+        if (task.type === "Custom" && task.deadline) {
+          const deadline = new Date(task.deadline);
+
+          // every day overdue = penalty
+          const overdue = current > deadline;
+
+          if (overdue && !task.completedToday) {
+            dailyPenalty += task.amount;
+          }
+
+          return task;
+        }
+
+        return task;
+      });
+
+      updatedUser.money -= dailyPenalty;
+    }
+
+    updatedUser.currentDate = current.toISOString();
+
+    console.log("simulated user", updatedUser);
+
+    // IMPORTANT:
+    // only updates temporary simulation state
+    setSimulatedUser(updatedUser);
+  };
+
+  // ─────────────────────────────────────────────
+  // CLEAR SIMULATION
+  // ─────────────────────────────────────────────
+
+  const clearSimulation = () => {
+    setSimulatedUser(null);
+  };
+
   return (
     <UserContext.Provider
-      value={{ user, setUser, updateMoney, updateLayers, updateInventory }}
+      value={{
+        user,
+        activeUser,
+        setUser,
+
+        updateMoney,
+        updateLayers,
+        updateInventory,
+
+        simulateDays,
+        clearSimulation,
+
+        simulated: simulatedUser != null,
+      }}
     >
       {children}
     </UserContext.Provider>
@@ -130,6 +209,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
 export function useUser() {
   const ctx = useContext(UserContext);
-  if (!ctx) throw new Error("useUser must be used inside UserProvider");
+
+  if (!ctx) {
+    throw new Error("useUser must be used inside UserProvider");
+  }
+
   return ctx;
 }

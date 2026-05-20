@@ -34,11 +34,6 @@ const UserSchema = new Schema<IUser>({
     unique: true,
     lowercase: true,
     trim: true,
-
-    match: [
-      /^\S+@\S+\.\S+$/,
-      'Invalid email format'
-    ]
   },
 
   password: {
@@ -65,36 +60,42 @@ const UserSchema = new Schema<IUser>({
       type: [[Schema.Types.Mixed]],
       required: true,
   
-      validate: {
-        validator: function (board: IEntity[][]) {
-          return board.length === 10;
-        },
-        message: 'layer0 must contain 10 rows'
-      }
+      // validate: {
+      //   validator: function (board: IEntity[][]) {
+      //     return Array.isArray(board) &&
+      //     board.length === 10 &&
+      //     board.every(row => Array.isArray(row) && row.length === 10);
+      //   },
+      //   message: 'layer0 must contain 10 rows'
+      // }
     },
   
     layer1: {
       type: [[Schema.Types.Mixed]],
       required: true,
   
-      validate: {
-        validator: function (board: IEntity[][]) {
-          return board.length === 10;
-        },
-        message: 'layer1 must contain 10 rows'
-      }
+      // validate: {
+      //   validator: function (board: IEntity[][]) {
+      //     return Array.isArray(board) &&
+      //     board.length === 10 &&
+      //     board.every(row => Array.isArray(row) && row.length === 10);
+      //   },
+      //   message: 'layer1 must contain 10 rows'
+      // }
     },
   
     layer2: {
       type: [[Schema.Types.Mixed]],
       required: true,
   
-      validate: {
-        validator: function (board: IEntity[][]) {
-          return board.length === 10;
-        },
-        message: 'layer2 must contain 10 rows'
-      }
+      // validate: {
+      //   validator: function (board: IEntity[][]) {
+      //     return Array.isArray(board) &&
+      //     board.length === 10 &&
+      //     board.every(row => Array.isArray(row) && row.length === 10);
+      //   },
+      //   message: 'layer2 must contain 10 rows'
+      // }
     },
   },
 

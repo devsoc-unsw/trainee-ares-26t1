@@ -1,69 +1,149 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { connectDB } from "./connect";
-import { Entity } from "../models/Entity";
-import ItemFactory from "../classes/item/ItemFactory";
-import { ItemType } from "../constants/itemConstants";
+import { ItemModel } from "../models/Item";
 
 dotenv.config();
+
+const ITEMS = [
+  {
+    id: 1,
+    name: "Chair",
+    layer: 0,
+    sprite: "/tiles/lv0/chair.png",
+    price: 67,
+  },
+  {
+    id: 2,
+    name: "Rug (Left)",
+    layer: 0,
+    sprite: "/tiles/lv0/rug_left.png",
+    price: 20,
+  },
+  {
+    id: 3,
+    name: "Rug (Right)",
+    layer: 0,
+    sprite: "/tiles/lv0/rug_right.png",
+    price: 20,
+  },
+  {
+    id: 4,
+    name: "Stool",
+    layer: 0,
+    sprite: "/tiles/lv0/stool.png",
+    price: 40,
+  },
+
+  // Layer 1
+  {
+    id: 10,
+    name: "Potted Plant",
+    layer: 1,
+    sprite: "/tiles/lv1/plant.png",
+    price: 40,
+  },
+  {
+    id: 11,
+    name: "Counter (Left)",
+    layer: 1,
+    sprite: "/tiles/lv1/counter_left.png",
+    price: 30,
+  },
+  {
+    id: 12,
+    name: "Counter (Middle)",
+    layer: 1,
+    sprite: "/tiles/lv1/counter_middle.png",
+    price: 30,
+  },
+  {
+    id: 13,
+    name: "Counter (Right)",
+    layer: 1,
+    sprite: "/tiles/lv1/counter_right.png",
+    price: 30,
+  },
+  {
+    id: 14,
+    name: "Table (Top Left)",
+    layer: 1,
+    sprite: "/tiles/lv1/table_tl.png",
+    price: 40,
+  },
+  {
+    id: 15,
+    name: "Table (Top Right)",
+    layer: 1,
+    sprite: "/tiles/lv1/table_tr.png",
+    price: 40,
+  },
+  {
+    id: 16,
+    name: "Table (Bottom Left)",
+    layer: 1,
+    sprite: "/tiles/lv1/table_bl.png",
+    price: 40,
+  },
+  {
+    id: 17,
+    name: "Table (Bottom Right)",
+    layer: 1,
+    sprite: "/tiles/lv1/table_br.png",
+    price: 40,
+  },
+
+  // Layer 2
+  {
+    id: 20,
+    name: "Cake",
+    layer: 2,
+    sprite: "/tiles/lv2/cake.png",
+    price: 10,
+  },
+  {
+    id: 21,
+    name: "Coffee Machine",
+    layer: 2,
+    sprite: "/tiles/lv2/coffee_machine.png",
+    price: 50,
+  },
+  {
+    id: 22,
+    name: "Coffee",
+    layer: 2,
+    sprite: "/tiles/lv2/coffee.png",
+    price: 5,
+  },
+  {
+    id: 23,
+    name: "Croissant",
+    layer: 2,
+    sprite: "/tiles/lv2/croissant.png",
+    price: 8,
+  },
+  {
+    id: 24,
+    name: "Pie",
+    layer: 2,
+    sprite: "/tiles/lv2/pie.png",
+    price: 10,
+  },
+];
 
 const testInsertItem = async () => {
   try {
     await connectDB();
     console.log("Connected to MongoDB");
 
-    const item1 = ItemFactory.createItem(ItemType.BrownChair);
-    const item2 = ItemFactory.createItem(ItemType.GreenChair);
-    const item3 = ItemFactory.createItem(ItemType.Table);
-    const item4 = ItemFactory.createItem(ItemType.PotPlant);
-
     // insert items
-    await Entity.insertMany([
-      {
-        id: item1.getId(),
-        entityType: "Item",
-        width: item1.getWidth(),
-        height: item1.getHeight(),
-        zIndex: item1.getZIndex(),
-        itemType: item1.getType(),
-        name: item1.getname(),
-        price: item1.getPrice(),
-      },
-      {
-        id: item2.getId(),
-        entityType: "Item",
-        width: item2.getWidth(),
-        height: item2.getHeight(),
-        zIndex: item2.getZIndex(),
-        itemType: item2.getType(),
-        name: item2.getname(),
-        price: item2.getPrice(),
-      },
-      {
-        id: item3.getId(),
-        entityType: "Item",
-        width: item3.getWidth(),
-        height: item3.getHeight(),
-        zIndex: item3.getZIndex(),
-        itemType: item3.getType(),
-        name: item3.getname(),
-        price: item3.getPrice(),
-      },
-      {
-        id: item4.getId(),  
-        entityType: "Item",
-        width: item4.getWidth(),
-        height: item4.getHeight(),
-        zIndex: item4.getZIndex(),
-        itemType: item4.getType(),
-        name: item4.getname(),
-        price: item4.getPrice(),
-      },
-    ]);
-
-
-    const items = await Entity.find({ entityType: "Item" });
-    console.log(JSON.stringify(items, null, 2));
+    for (const item of ITEMS) {
+      await ItemModel.updateOne(
+        { id: item.id }, // match by id
+        { $set: item },  // overwrite/update
+        { upsert: true } // insert if not exists
+      );
+    }
 
   } catch (err) {
     console.error("Error during test:");

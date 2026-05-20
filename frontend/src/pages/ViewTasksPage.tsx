@@ -1,5 +1,5 @@
 import WoodContainer from "../components/WoodContainer";
-import ToDoList from "../components/ToDoList";
+import ToDoList from "../components/menu/ToDoList";
 
 const ViewTasksPage = () => {
   return (

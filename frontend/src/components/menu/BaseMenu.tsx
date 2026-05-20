@@ -105,7 +105,7 @@ export function BaseMenu() {
   return (
     <div className="ml-15">
       <WoodContainer>
-        <div className="flex flex-col w-[25vw] h-[50vh] items-center p-2 gap-3">
+        <div className="flex flex-col w-[25vw] h-[60vh] items-center p-2 gap-3">
           <MenuHeader
             title={menuTitles[menuContent]}
             Icon={ArrowLeft}

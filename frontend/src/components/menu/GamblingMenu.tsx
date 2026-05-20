@@ -119,7 +119,7 @@ export default function GamblingMenu() {
       {lastOutcome &&
         (lastOutcome.won ? (
           <p className="text-center text-theme-white">
-            Yay! You won ${lastOutcome.amount} !!!!
+            Yay! You won ${lastOutcome.amount * 10} !!!!
           </p>
         ) : (
           <p className="text-center text-theme-white">

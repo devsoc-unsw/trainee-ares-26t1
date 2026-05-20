@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import WoodContainer from "../components/WoodContainer";
 import { useState } from "react";
 import { authLogin } from "../api/api";
@@ -6,11 +6,14 @@ import { authLogin } from "../api/api";
 const LoginPage = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("")
-  // const [loginRes, setLoginRes] = useState("");
-  const handleLogin = async () => {
+  
+  const navigate = useNavigate();
+  const handleLogin = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
     try {
-      const data = await authLogin();
-      // setLoginRes(data.message);
+      const res = await authLogin(email, password) as any;
+      localStorage.setItem("token", res.token);
+      navigate("/dashboard");
     } catch (err) {
       console.log(err);
     }

@@ -11,8 +11,6 @@ const RegisterPage = () => {
 
   const handleRegister = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
-    console.log(email);
-    console.log(password);
     try {
       await authRegister(email, password);
       

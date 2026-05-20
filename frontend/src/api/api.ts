@@ -35,21 +35,34 @@ type User = {
 export const testApi = async (): Promise<HelloResponse> =>
   get<HelloResponse>("/hi");
 
-export const authLogin = async (): Promise<Auth> => get<Auth>("/auth/login");
+export const authLogin = async (
+  email: string,
+  password: string,
+): Promise<Auth> =>
+  post<Auth>(
+    "/auth/login",
+    { 
+      email, 
+      password,
+    },
+    {
+      "Content-Type": "application/json",
+    },
+  );
 
 export const authRegister = async (
   email: string,
   password: string,
 ): Promise<Auth> =>
   post<Auth>(
-    "/auth/register", 
+    "/auth/register",
     {
       email,
       password,
     },
     {
       "Content-Type": "application/json",
-    }
-  );  
+    },
+  );
 
 export const fetchUser = async (): Promise<User> => get<User>("/user");

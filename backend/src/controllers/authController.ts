@@ -2,6 +2,10 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { User } from "../models/User";
+import process from "process";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -67,6 +71,7 @@ export const login = async (req: Request, res: Response) => {
 
     res.json({ token });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ message: "Server error" });
   }
 };

@@ -67,6 +67,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     try {
       setIsLoading(true);
+      setUser(null);
       const data = await fetchUser();
       setUser(data);
     } catch (err) {

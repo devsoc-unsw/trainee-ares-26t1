@@ -2,11 +2,13 @@ import { Link, useNavigate } from "react-router-dom";
 import WoodContainer from "../components/WoodContainer";
 import { useState } from "react";
 import { authLogin } from "../api/api";
+import { useUser } from "../context/UserContext";
 
 const LoginPage = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const navigate = useNavigate();
+  const { loadUser } = useUser();
   const handleLogin = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
@@ -14,6 +16,7 @@ const LoginPage = () => {
     try {
       const res = (await authLogin(email, password)) as any;
       localStorage.setItem("token", res.token);
+      await loadUser();
       navigate("/dashboard");
     } catch (err) {
       console.log(err);

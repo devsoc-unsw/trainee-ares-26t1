@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import WoodContainer from "../components/WoodContainer";
-import { authRegister } from "../api/api";
+import { authLogin, authRegister } from "../api/api";
 import { Link, useNavigate } from "react-router-dom";
 import FormButton from "../components/menu/LandingButton";
 
@@ -16,6 +16,9 @@ const RegisterPage = () => {
     e.preventDefault();
     try {
       await authRegister(email, password);
+      // chat why does register not return a token
+      const res = (await authLogin(email, password)) as any;
+      localStorage.setItem("token", res.token);
       navigate("/dashboard");
     } catch (err) {
       console.log(err);

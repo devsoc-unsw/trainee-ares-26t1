@@ -1,6 +1,6 @@
 import { BaseMenu } from "../components/menu/BaseMenu";
 import WoodContainer from "../components/WoodContainer";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import GameMap from "../components/map/GameMap";
 import KeyHint from "../components/KeyHint";
 import { useUser } from "../context/UserContext";

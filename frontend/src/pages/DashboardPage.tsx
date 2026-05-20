@@ -10,6 +10,8 @@ const DashboardPage = () => {
   const { menuOpen, setMenuOpen, toggleMenu, mode } = useGameState();
   const { user } = useUser();
 
+  console.log("user:", user);
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === "Tab") {

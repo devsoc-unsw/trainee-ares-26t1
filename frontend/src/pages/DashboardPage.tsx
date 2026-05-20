@@ -6,11 +6,12 @@ import KeyHint from "../components/KeyHint";
 import { useUser } from "../context/UserContext";
 import { useGameState } from "../context/GameStateContext";
 import { getDayDiff } from "../utils/player";
+import { fetchUser } from "../api/api";
 
 const DashboardPage = () => {
   const { menuOpen, setMenuOpen, toggleMenu, mode } = useGameState();
 
-  const { activeUser, user } = useUser();
+  const { activeUser, user, setUser } = useUser();
 
   const daysSimulated = getDayDiff(user.currentDate, activeUser.currentDate);
 
@@ -31,6 +32,21 @@ const DashboardPage = () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [toggleMenu, mode]);
+
+    // Fetches user from db
+    useEffect(() => {
+      const loadUser = async () => {
+        try {
+          const data = await fetchUser() as any;
+          console.log("fetching user", data);
+          setUser(data.user);
+        } catch (err) {
+          console.error("Failed to fetch user", err);
+        }
+      };
+  
+      loadUser();
+    }, []);
 
   return (
     <div className="relative flex flex-col min-h-screen min-w-screen">

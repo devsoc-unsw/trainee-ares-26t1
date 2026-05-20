@@ -1,13 +1,11 @@
 import {
   createContext,
   useContext,
-  useEffect,
   useState,
   type ReactNode,
 } from "react";
 
 import { DEFAULT_USER, type User } from "../types/UserTypes";
-import { fetchUser } from "../api/api";
 
 interface UserContextType {
   user: User;
@@ -39,25 +37,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
   // everything in UI should use this
   const activeUser = simulatedUser ?? user;
-
-  // ─────────────────────────────────────────────
-  // FETCH USER
-  // ─────────────────────────────────────────────
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const data = (await fetchUser()) as any;
-
-        console.log("fetching user", data);
-
-        setUser(data.user);
-      } catch (err) {
-        console.error("Failed to fetch user", err);
-      }
-    };
-
-    loadUser();
-  }, []);
 
   // ─────────────────────────────────────────────
   // MONEY

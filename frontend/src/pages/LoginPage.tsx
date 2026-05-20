@@ -5,13 +5,15 @@ import { authLogin } from "../api/api";
 
 const LoginPage = () => {
   const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("")
-  
+  const [password, setPassword] = useState<string>("");
+
   const navigate = useNavigate();
-  const handleLogin = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleLogin = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
     e.preventDefault();
     try {
-      const res = await authLogin(email, password) as any;
+      const res = (await authLogin(email, password)) as any;
       localStorage.setItem("token", res.token);
       navigate("/dashboard");
     } catch (err) {

@@ -27,10 +27,16 @@ export default function ItemButton({ text, icon, onClick }: ItemButtonProps) {
                 "
         onClick={onClick}
       >
-        <img src={icon} className="h-10 w-10" />
+        <img
+          src={icon}
+          className="h-10 w-10"
+          style={{ imageRendering: "pixelated" }}
+        />
       </button>
 
-      <p className="text-md text-center mt-1 text-theme-white">{text}</p>
+      <p className="text-md text-center mt-1 text-theme-white font-mono">
+        {text}
+      </p>
     </div>
   );
 }

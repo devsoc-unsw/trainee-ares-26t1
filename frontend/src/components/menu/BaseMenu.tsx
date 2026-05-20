@@ -8,6 +8,7 @@ import {
   Calendar,
   LogOut,
   ArrowLeft,
+  SunMoon,
 } from "lucide-react";
 
 import MenuButton from "./MenuButton";
@@ -16,27 +17,23 @@ import MenuHeader from "./MenuHeader";
 
 // menus
 import ShopMenu from "./ShopMenu";
-import DecorateMenu from "./DecorateMenu";
 import AddTaskMenu from "./AddTaskMenu";
 import ViewTaskMenu from "./ViewTaskMenu";
 import { useNavigate } from "react-router-dom";
+import { useGameState } from "../../context/GameStateContext";
+import { useUser } from "../../context/UserContext";
 
-type MenuView =
-  | "main"
-  | "settings"
-  | "shop"
-  | "decorate"
-  | "addTask"
-  | "viewTask";
+type MenuView = "main" | "settings" | "shop" | "addTask" | "viewTask";
 
 export function BaseMenu() {
   const [menuContent, setMenuContent] = useState<MenuView>("main");
+  const { enterDecorateMode } = useGameState();
+  const { simulateDays } = useUser();
 
   const menuTitles: Record<MenuView, string> = {
     main: "Menu",
     settings: "Settings",
     shop: "Shop",
-    decorate: "Decorate",
     addTask: "Add Task",
     viewTask: "View Tasks",
   };
@@ -63,7 +60,7 @@ export function BaseMenu() {
         <MenuButton
           text="Decorate"
           Icon={Paintbrush}
-          onClick={() => setMenuContent("decorate")}
+          onClick={enterDecorateMode}
         />
         <MenuButton
           text="Add Task"
@@ -76,16 +73,16 @@ export function BaseMenu() {
           onClick={() => setMenuContent("viewTask")}
         />
         <MenuButton
-          text="Log out"
-          Icon={LogOut}
-          onClick={handleLogout}
+          text="Next day"
+          Icon={SunMoon}
+          onClick={() => simulateDays(1)}
         />
+        <MenuButton text="Log out" Icon={LogOut} onClick={handleLogout} />
       </div>
     ),
 
     settings: <SettingsMenu onBack={() => setMenuContent("main")} />,
     shop: <ShopMenu onBack={() => setMenuContent("main")} />,
-    decorate: <DecorateMenu onBack={() => setMenuContent("main")} />,
     addTask: <AddTaskMenu onBack={() => setMenuContent("main")} />,
     viewTask: <ViewTaskMenu onBack={() => setMenuContent("main")} />,
   };

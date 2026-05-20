@@ -9,11 +9,13 @@ const RegisterPage = () => {
 
   const navigate = useNavigate();
 
-  const handleRegister = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleRegister = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
     e.preventDefault();
     try {
       await authRegister(email, password);
-      
+
       // Assuming that register does not log the user in
       navigate("/login");
     } catch (err) {

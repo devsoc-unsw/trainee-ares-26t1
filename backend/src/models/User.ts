@@ -28,7 +28,8 @@ interface UserDoc extends Document {
     amount: number;
     difficulty?: string;
     dayOfWk?: number;
-    deadline?: string;
+    deadline?: Date;
+    lastCompleted?: Date;
   }[];
 
   debtStartDate: Date | null;
@@ -54,7 +55,8 @@ const TaskSchema = new Schema(
     amount: { type: Number, required: true },
     difficulty: { type: String },
     dayOfWk: { type: Number },
-    deadline: { type: String },
+    deadline: { type: Date },
+    lastCompleted: { type: Date }
   },
   { _id: false }
 );

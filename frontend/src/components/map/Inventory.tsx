@@ -16,7 +16,7 @@ function InventorySidebar({
     .filter(({ count }) => count > 0);
 
   return (
-    <div className="w-48 shrink-0 bg-theme-brown-dark flex flex-col rounded-r-xl border-theme-brown border-t-5 border-b-5 border-r-5">
+    <div className="w-48 shrink-0 bg-theme-brown-dark flex flex-col rounded-xl border-theme-brown border-5">
       <div className="px-3 py-2 border-b border-amber-800">
         <p className="text-theme-yellow text-xs font-semibold uppercase tracking-widest">
           Inventory

@@ -26,7 +26,7 @@ export default function FormButton({ text, onClick }: FormButtonProps) {
                 "
         onClick={onClick}
       >
-        <p className="text-md text-center mt-1 text-theme-white">{text}</p>
+        <p className="text-md text-center mt-1 text-theme-black">{text}</p>
       </button>
     </div>
   );

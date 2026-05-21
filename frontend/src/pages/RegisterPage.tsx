@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import WoodContainer from "../components/WoodContainer";
 import { authLogin, authRegister } from "../api/api";
 import { Link, useNavigate } from "react-router-dom";
-import FormButton from "../components/menu/LandingButton";
 
 const RegisterPage = () => {
   const [email, setEmail] = useState<string>("");

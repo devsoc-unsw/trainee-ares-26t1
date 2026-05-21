@@ -25,6 +25,10 @@ const RegisterPage = () => {
     }
   };
 
+  const inputClass = "bg-theme-brown-light rounded-xl w-full px-2 py-1";
+  const btnClass =
+    "flex items-center justify-center rounded-xl bg-theme-brown-light text-black h-[5vh] p-3 hover:bg-theme-yellow hover:text-black";
+
   return (
     <div className="flex flex-col items-center justify-center h-screen w-[85vw] md:w-screen">
       <WoodContainer>
@@ -35,30 +39,32 @@ const RegisterPage = () => {
             </h1>
             <h2 className="text-center">Create an Account</h2>
           </div>
-          <div>
+          <div className="flex flex-col">
             <label>Email:</label>
             <input
               name="email"
               type="string"
               required
-              className="flex border-1 rounded-md"
+              placeholder="enter email:"
+              className={inputClass}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-          <div>
+          <div className="flex flex-col">
             <label>Password:</label>
             <input
               name="password"
               type="password"
               required
-              className="flex border-1 rounded-md"
+              placeholder="enter password:"
+              className={inputClass}
               onChange={(e) => setPassword(e.target.value)}
             />
           </div>
           <div className="flex flex-col justify-center pt-3 gap-5">
             <button
               type="submit"
-              className="flex justify-center border-2 rounded-xl w-[20vw] md:w-[10vw]"
+              className={btnClass}
               onClick={(e) => handleRegister(e)}
             >
               Register
